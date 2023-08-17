@@ -1,9 +1,12 @@
 import express from 'express'
 const route=express.Router()
-import { userLogin, userSignup } from '../controller/userController.js'
+import { verifyOtp, userLogin, userSignup } from '../controller/userController.js'
 
 route.post('/signup',userSignup)
 
+route.post('/otp',verifyOtp)
+
 route.post('/login',userLogin)
+
 
 export default route

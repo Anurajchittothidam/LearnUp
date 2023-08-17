@@ -1,6 +1,9 @@
 import teachers from '../models/teacherSchema.js'
 import users from '../models/userSchema.js'
 import bcrypt from 'bcrypt'
+import { sendEmail,verifyOTP } from '../helpers/sendMailTeacher.js';
+
+let userDetails;
 
 const teacherLogin=async(req,res)=>{
     try{
@@ -25,15 +28,11 @@ const teacherLogin=async(req,res)=>{
     }
 }
 
-
-const teacherSignup=async (req,res)=>{
+const verifyOtp=async (req,res)=>{
     try{
-        const {email,password,phoneNumber,name}=req.body
-        if(!email || !password || !phoneNumber || !name){
-            return res.status(400).json('Enter the complete fields')
-        }else{
-            const emailExist=teachers.findOne({email})
-            if(!emailExist){
+        const verified=verifyOTP(req.body.otp)
+        if(verified){
+        const {email,password,phoneNumber,name}=userDetails
                 const hash=await bcrypt.hash(password,10)
                 const newTeacher=new teachers({
                     name,
@@ -46,8 +45,31 @@ const teacherSignup=async (req,res)=>{
                 }).catch((err)=>{
                     return res.status(400).json(err.message)
                 })
+        }else{
+            return res.status(400).json('Otp does not match')
+        }
+        
+    }catch(err){
+        res.status(500).json('Something went wrong')
+    }
+}
+
+const teacherSignup=async (req,res)=>{
+    try{
+        const {email,password,phoneNumber,name}=req.body
+        if(!email || !password || !phoneNumber || !name){
+            return res.status(400).json('Enter the complete fields')
+        }else{
+            const emailExist=teachers.findOne({email})
+            if(!emailExist){
+                sendEmail(email,req).then((response)=>{
+                    res.status(200).json('Otp send to the email')
+                    userDetails=req.body
+                }).catch((err)=>{
+                    res.status(400).json('Otp not send to the email')
+                })
             }else{
-                return res.status(400).json('This email alredy exist')
+                res.status(400).json('This email alredy exist')
             }
         }
     }catch(err){
@@ -87,4 +109,4 @@ const getAllUsers=async (req,res)=>{
         res.status(500).json('Something went wrong')
     }
 }
-export {teacherLogin,teacherSignup,getAllUsers,editProfile}
+export {teacherLogin,teacherSignup,getAllUsers,editProfile,verifyOtp}
