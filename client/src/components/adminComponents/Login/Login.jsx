@@ -1,20 +1,26 @@
 import React, { useState } from "react";
 import axios from "../../../axios";
+import {toast,ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading,setIsLoading]=useState(false)
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      await axios.post("/admin/login", { email, password }).then((res)=>{
-        console.log(res.data);
+      setIsLoading(true)
+      await axios("adminJwtToken").post("/admin/login", { email, password }).then((res)=>{
+        console.log(res);
         navigate("/admin/");
       }).catch((err)=>{
-        console.log(err?.response?.data)
+        toast.error(err)
+      }).finally(()=>{
+        setIsLoading(false)
       })
     } catch (error) {
       console.log("Error:", error);
@@ -26,7 +32,13 @@ function Login() {
         rel="stylesheet"
         href="https://kit-pro.fontawesome.com/releases/v5.15.1/css/pro.min.css"
       />
-
+      {isLoading ?(
+        <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+        <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0" >
+          <i className="fas fa-circle-notch fa-spin fa-5x"></i>
+        </span>
+        </div>
+      ):(
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-300">
         <div className="flex flex-col bg-white shadow-md px-4 sm:px-6 md:px-8 lg:px-10 py-8 rounded-md w-full max-w-md">
           <h1 classNameName="flex justify-center text-3xl">Admin Login</h1>
@@ -123,9 +135,12 @@ function Login() {
             </form>
           </div>
         </div>
+        <ToastContainer/>
       </div>
+        
+      )}
     </>
   );
 }
 
-export default Login;
+export default Login

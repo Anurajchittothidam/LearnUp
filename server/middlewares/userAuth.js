@@ -28,6 +28,7 @@ const verifyUser=async(req,res,next)=>{
         })
     }else{
         res.json({status:false,message:"No token found"})
+        next()
     }
     }catch(err){
         res.status(200).json('Something went wrong')

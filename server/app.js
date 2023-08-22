@@ -6,11 +6,17 @@ import path from 'path'
 import userRouter from './routes/user.js'
 import adminRouter from './routes/admin.js'
 import teacherRouter from './routes/teacher.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 app.listen(8000,()=>{
     console.log('port connected to 8000')
 })
-app.use(cors())
+app.use(cors({
+    origin : ['http://localhost:5173'],
+    methods : ["GET","POST" , "DELETE" ,"PUT" , "PATCH"] ,
+    credentials: true 
+}))
 app.use(express.static(path.resolve()+'/public'))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
@@ -21,7 +27,7 @@ app.use('/teacher',teacherRouter)
 
 
 mongoose.set('strictQuery',false)
-mongoose.connect('mongodb+srv://anuraj:anuraj123@cluster0.1vmmfr8.mongodb.net/LearnUP').then(()=>{
+mongoose.connect(process.env.DATABASE).then(()=>{
     console.log('database connected')
 }).catch((err)=>{
     console.log(err)

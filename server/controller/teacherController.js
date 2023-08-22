@@ -2,8 +2,17 @@ import teachers from '../models/teacherSchema.js'
 import users from '../models/userSchema.js'
 import bcrypt from 'bcrypt'
 import { sendEmail,verifyOTP } from '../helpers/sendMailTeacher.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv'
+dotenv.config()
 
 let userDetails;
+
+const maxAge=3*24*60*60
+const secretId=process.env.SECRET_KEY
+const createToken=(id)=>{
+    return jwt.sign({id},secretId,{expiresIn:maxAge})
+}
 
 const teacherLogin=async(req,res)=>{
     try{
@@ -19,7 +28,8 @@ const teacherLogin=async(req,res)=>{
                 if(!isMatch){
                     return res.status(400).json('Incorrect password')
                 }else{
-                    return res.status(200).json(teacherExist)
+                    const token=createToken(teacherExist._id)
+                    return res.status(200).json(teacherExist,token)
                 }
             }
         }

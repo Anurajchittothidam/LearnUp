@@ -16,7 +16,7 @@ const userSignup=async(req,res)=>{
     try{
         const {username,email,password}=req.body
         if(email!==null && email!==undefined && password!==null && password!==undefined && username!==undefined && username!==null){
-            const userExist=await users.findOne({email})
+            const userExist=await users.findOne({email,role:'users'})
             if(!userExist){
                 sendEmail(email,req).then((response)=>{
                     res.status(200).json("Otp send to the email")
@@ -42,7 +42,7 @@ const verifyOtp=async(req,res)=>{
             const {username,email,password}=userDetails
             const hash=await bcrypt.hash(password,10)
             const newUser=new users({
-                username,
+                name,
                 email,
                 password:hash
             })
@@ -67,7 +67,7 @@ const userLogin=async(req,res)=>{
     try{
         const {email,password}=req.body
         if(email!==null && email!==undefined && password!==null && password!==undefined){
-           const userExist=await users.findOne({email:email,block:false})
+           const userExist=await users.findOne({email:email,block:false,role:'users'})
            if(userExist){
             const isMatch=await bcrypt.compare(password,userExist.password)
             if(!isMatch){

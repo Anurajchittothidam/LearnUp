@@ -1,19 +1,32 @@
 import express from 'express'
-import { addTeachers, adminLogin, blockUnblockTeachers, blockUnblockUser, getAllTeachers, getAllUsers } from '../controller/adminController.js'
-const route=express.Router()
+import { addCategory, addTeachers, adminLogin, blockUnblockCategory, blockUnblockUser, editCategory, generateOtp, getAllCategories, getAllTeachers, getAllUsers } from '../controller/adminController.js'
+import verifyAdmin from '../middlewares/adminAuth.js'
+import {validateId} from '../middlewares/validateParams.js'
+const router=express.Router()
 
-route.post('/login',adminLogin)
+router.post('/login',adminLogin)
 
-route.get('/users',getAllUsers)
+// router.use(verifyAdmin)
 
-route.post('/users/:id',blockUnblockUser)
+router.get('/users',getAllUsers)
+
+router.patch('/users/:id',validateId,blockUnblockUser)
+
+router.get('/teachers',getAllTeachers)
+
+router.post('/teachers/add',generateOtp)
+
+router.post('/teachers/otp',addTeachers)
+
+router.patch('/teachers/:id',validateId,blockUnblockUser)
+
+router.get('/categories',getAllCategories)
+
+router.post('/categories/add',addCategory)
+
+router.put('/categories/edit/:id',validateId,editCategory)
+
+router.patch('/categories/:id',validateId,blockUnblockCategory)
 
 
-route.get('/teachers',getAllTeachers)
-
-route.post('/teachers/add',addTeachers)
-
-route.post('/teachers/:id',blockUnblockTeachers)
-
-
-export default route
+export default router

@@ -1,13 +1,19 @@
 import mongoose from 'mongoose'
 
 const userSchema=new mongoose.Schema({
-    username:{
+    name:{
         type:String,
         required:true,
     },
     email:{
         type:String,
         required:true
+    },
+    phoneNumber:{
+        type:Number,
+    },
+    about:{
+        type:String,
     },
     password:{
         type:String,
@@ -19,7 +25,7 @@ const userSchema=new mongoose.Schema({
     },
     role:{
         type:String,
-        default:'student'
+        default:'users'
     }
 })
 

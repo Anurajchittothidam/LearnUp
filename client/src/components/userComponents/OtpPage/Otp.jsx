@@ -3,33 +3,55 @@ import './otp.css'
 
 function Otp() {
   return (
-    <body className="bg-white">
-
-    <div className="flex min-h-screen">
-  
-      <div className="flex flex-row w-full ">
-    
-        <div className="flex flex-1 flex-col items-center justify-center px-10 relative">
-         
-          <div className="flex flex-1 flex-col  justify-center space-y-5 max-w-md">
-            <div className="flex flex-col space-y-2 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold">Enter the OTP</h2>
-              <p className="text-md md:text-xl">The OTP is send to the specified email address</p>
-            </div>
-            <div className="flex flex-col max-w-md space-y-5">
-              <input type="text" placeholder="OTP"
-                className="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal" />
-              <button className="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white">
-              submit
-              </button>
-            </div>
+    <>
+    <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12">
+    <div class="relative bg-white px-6 pt-10 pb-9 shadow-xl mx-auto w-full max-w-lg rounded-2xl">
+      <div class="mx-auto flex w-full max-w-md flex-col space-y-16">
+        <div class="flex flex-col items-center justify-center text-center space-y-2">
+          <div class="font-semibold text-3xl">
+            <p>Email Verification</p>
           </div>
+          <div class="flex flex-row text-sm font-medium text-gray-400">
+            <p>We have sent a code to your email </p>
+          </div>
+        </div>
   
+        <div>
+          <form action="" method="post">
+            <div class="flex flex-col space-y-16">
+              <div class="flex flex-row items-center justify-between mx-auto w-full max-w-xs">
+                <div class="w-16 h-16 ">
+                  <input class="w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700" type="text" name="" id=""/>
+                </div>
+                <div class="w-16 h-16 ">
+                  <input class="w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700" type="text" name="" id=""/>
+                </div>
+                <div class="w-16 h-16 ">
+                  <input class="w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700" type="text" name="" id=""/>
+                </div>
+                <div class="w-16 h-16 ">
+                  <input class="w-full h-full flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border border-gray-200 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700" type="text" name="" id=""/>
+                </div>
+              </div>
+  
+              <div class="flex flex-col space-y-5">
+                <div>
+                  <button class="flex flex-row items-center justify-center text-center w-full border rounded-xl outline-none py-5 bg-blue-700 border-none text-white text-sm shadow-sm">
+                    Verify Account
+                  </button>
+                </div>
+  
+                <div class="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
+                  <p>Didn't recieve code?</p> <a class="flex flex-row items-center text-blue-600" href="http://" target="_blank" rel="noopener noreferrer">Resend</a>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
-  
     </div>
-  </body>
+  </div>
+  </>
   )
 }
 
