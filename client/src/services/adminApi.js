@@ -15,7 +15,11 @@ export const blockUnblockUser=(e)=>{
 
 
 export const addTeachers=(teacherData)=>{
-    return axios('adminJwtToken').post('/admin/teachers/add',{teacherData})
+    return axios('adminJwtToken').post('/admin/teachers/add',{...teacherData})
+}
+
+export const addTeachersOtp=(Otp)=>{
+    return axios('adminJwtToken').post('/admin/teachers/otp',{Otp})
 }
 
 export const getCategories=()=>{

@@ -10,7 +10,6 @@ import SideBar from "../sideBar/SideBar.jsx";
 const UserTeacher=(props)=> {
   const [userDetails, setUserDetails] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [addTeacherPopUp,setAddTeacherPopUp]=useState(false)
   const navigate=useNavigate()
   useEffect(() => {
       setIsLoading(true);
@@ -86,59 +85,8 @@ const UserTeacher=(props)=> {
                   <h1 className="flex justify-center">No user found</h1>
                 ) : (
                  <>
-                {userDetails[0].role==='teachers' && ( <><div className="flex justify-end my-2"><button type="button" onClick={() => setAddTeacherPopUp(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Add Teacher</button></div>
-                {addTeacherPopUp && (
-                      <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
-                        <div className="bg-white rounded p-6 w-1/2 ">
-                          <div className="flex justify-end">
-                          <button
-                            type="button"
-                            className=" box-content rounded-none border-none hover:no-underline hover:opacity-75 focus:opacity-100 focus:shadow-none focus:outline-none"
-                            onClick={() => setAddTeacherPopUp(false)}
-                            aria-label="Close"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="h-6 w-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                          </div>
-                          <h2 className="text-lg font-semibold mb-4">
-                            Add Category
-                          </h2>
-                          <p className="mb-4">
-                            Enter the Category Name.
-                          </p>
-                          <input type="text" className="shadow appearance-none border rounded  py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onChange={(e)=>setCategory(e.target.value)} />
-                         <div className="flex justify-end ">
-                         <button
-                          type="button"
-                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={() => setAddTeacherPopUp(false)}
-                          >
-                            Close
-                          </button>
-                          <button
-                          type="button"
-                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4  ms-2"
-                            onClick={()=>addTeacher()}
-                          >
-                            Save
-                          </button>
-                         </div>
-                        </div>
-                      </div>
-                    )}
+                {userDetails[0].role==='teachers' && ( <><div className="flex justify-end my-2"><button type="button" onClick={()=> navigate('/admin/teachers/add')} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Add Teacher</button></div>
+               
                   </>)}
                   <table className="min-w-full border-collapse block md:table">
                   <thead className="block md:table-header-group">
