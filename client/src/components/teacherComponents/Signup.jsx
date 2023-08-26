@@ -1,0 +1,1 @@
+import {teacherSignup,teacherSignupOtp } from '../../services/teacherApi'

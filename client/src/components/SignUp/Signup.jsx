@@ -2,10 +2,11 @@ import React,{useState} from  'react'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import { addTeachers } from '../../services/adminApi'
+import { addTeachers} from '../../services/adminApi'
+import { teacherSignup } from '../../services/teacherApi';
 import './signup.css'
 
-function Signup() {
+function Signup(props) {
     const [isLoading,setIsLoading]=useState(false)
     const navigate=useNavigate()
     const [formData,setFormData]=useState({
@@ -26,18 +27,41 @@ function Signup() {
     }
 
     function handleSubmit(e){
-        setIsLoading(true)
-        e.preventDefault()
+      e.preventDefault()
+      console.log(props.data)
+      setIsLoading(true)
+      if(props.data==='teacher'){
+        console.log('dfs')
+        teacherSignup(formData).then((res)=>{
+          navigate('/teachers/otp')
+        }).catch((err)=>{
+          toast.error(err)
+        }).finally(()=>{
+          setIsLoading(false)
+        })
+      }else {
         addTeachers(formData).then((res)=>{
-            toast.success('added')
             navigate('/admin/teachers/otp')
         }).catch((err)=>{
+          console.log(err)
             toast.error(err)
         }).finally(()=>{
             setIsLoading(false)
         })
+      }
     }
+
+  
   return (
+    <>
+
+    {isLoading ? (
+        <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+        <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0" >
+          <i className="fas fa-circle-notch fa-spin fa-5x"></i>
+        </span>
+        </div>
+      ) : (
     <body className="bg-white">
 
   <div className="flex min-h-screen">
@@ -78,12 +102,12 @@ function Signup() {
               className="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal" />
             <button type='submit' className="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white">Submit</button>
             </form>
-            <div className="flex justify-center items-center">
+            {/* <div className="flex justify-center items-center">
               <span className="w-full border border-black"></span>
               <span className="px-4">Or</span>
               <span className="w-full border border-black"></span>
-            </div>
-            <button className="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black relative">
+            </div> */}
+            {/* <button className="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black relative">
               <span className="absolute left-4">
                 <svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <path fill="#EA4335 " d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z"/>
@@ -93,7 +117,7 @@ function Signup() {
               </svg>
               </span>
               <span>Sign Up with Google</span>
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -101,7 +125,12 @@ function Signup() {
     </div>
     <ToastContainer/>
   </div>
-</body>
+</body>)}
+<link
+    rel="stylesheet"
+    href="https://kit-pro.fontawesome.com/releases/v5.15.1/css/pro.min.css"
+  />
+</>
   )
 }
 

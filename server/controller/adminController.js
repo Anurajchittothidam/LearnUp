@@ -21,7 +21,7 @@ const adminLogin=async (req,res)=>{
                 maxAge: maxAge *1000
           
               })
-               return res.status(200).json({message:'Login Successfull',token})
+               return res.status(200).json({message:'Login Successfull',token,login:true,email})
             }else{
                return res.status(400).json('Invalid credentials')
             }
@@ -93,57 +93,84 @@ const getAllTeachers=async (req,res)=>{
 
 let userDetails;
 
-const generateOtp=async(req,res)=>{
+const addTeachers=async(req,res)=>{
     try{
         const {email,password,name,phoneNumber}=req.body
-        if(!email || !password || !name || !phoneNumber){
-            return res.status(400).json('fill the complete field')
-        }else{
-            const emailExist=await users.findOne({email,role:'teachers'})
-            if(!emailExist){
-               sendEmail(email).then((response)=>{
-                res.status(200).json({message:'Otp send to the email',status:true})
-                userDetails=req.body
-               }).catch((err)=>{
-                res.status(400).json({status:false,message:'Otp not sent to the email'})
-               })
+        if(req.body.action==='send'){
+            if(!email || !password || !name || !phoneNumber){
+                return res.status(400).json('fill the complete field')
             }else{
-                return res.status(400).json('This email alredy exist')
+                const emailExist=await users.findOne({email,role:'teachers'})
+                if(!emailExist){
+                   sendEmail(email).then((response)=>{
+                    res.status(200).json({message:'Otp send to the email',status:true})
+                    userDetails=req.body
+                   }).catch((err)=>{
+                    res.status(400).json({status:false,message:'Otp not sent to the email'})
+                   })
+                }else{
+                    return res.status(400).json('This email alredy exist')
+                }
             }
+        }else if(req.body.action==='verify'){
+            if(!req.body.otp){
+                return res.status(400).json('Fill the Otp')
+            }else{
+                verifyOTP(req.body.otp).then(async(result)=>{
+                    if(result){
+                        const {email,password,name,phoneNumber}=userDetails
+                        const hash=await bcrypt.hash(password,10)
+                        const newTeacher=new users({
+                            name,
+                            email,
+                            password:hash,
+                            phoneNumber,
+                            role:'teachers'
+                        })
+                        newTeacher.save().then((teacher)=>{
+                           return res.status(200).json({teacher,status:true})
+                        }).catch((err)=>{
+                           return res.status(400).json(err.message)
+                        })
+                    }else{
+                        return res.status(400).json({status:false,message:'Invalid Otp'})
+                    }
+                }).catch((err)=>{
+                    return res.status(400).json({status:false,message:'OTP not verified'})
+                })
+            }
+        }else{
+            return res.status(400).json('Something wrong with action')
         }
+        
     }catch(err){
         res.status(400).json('Something went wrong')
     }
 }
 
-
-const addTeachers=async(req,res)=>{
+const resendOtp=(req,res)=>{
     try{
-        const verified=verifyOTP(req.body.otp)
-        if(verified){
-            const {email,password,name,phoneNumber}=userDetails
-            const hash=await bcrypt.hash(password,10)
-            const newTeacher=new users({
-                name,
-                email,
-                password:hash,
-                phoneNumber,
-                role:'teachers'
-            })
-            newTeacher.save().then((teacher)=>{
-                res.status(200).json(teacher)
-            }).catch((err)=>{
-                res.status(400).json(err.message)
-            })
-
+        if(!userDetails){
+            return res.status(400).json('User Details not found')
         }else{
-            res.status(400).json({status:false,message:'Invalid Otp'})
+            const {email}=userDetails
+            if(!email){
+                return res.status(400).json('Email not found')
+            }else{
+                sendEmail(email).then((result)=>{
+                    return res.status(200).json('Otp send the the email')
+                }).catch((err)=>{
+                    return res.status(400).json('Otp not send to the email')
+                })
+            }
         }
-       
     }catch(err){
-        res.status(500).json('Something went wrong')
+        return res.status(400).json('Something went wrong')
     }
 }
+
+
+
 
 const getAllCategories=async(req,res)=>{
     try{
@@ -212,4 +239,4 @@ const editCategory=async(req,res)=>{
     }
 }
 
-export {adminLogin,blockUnblockUser,getAllUsers,getAllTeachers,generateOtp,addTeachers,getAllCategories,addCategory,blockUnblockCategory,editCategory}
+export {adminLogin,blockUnblockUser,getAllUsers,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}

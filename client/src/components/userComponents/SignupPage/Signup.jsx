@@ -1,8 +1,51 @@
-import React from 'react'
+import React,{useState} from 'react'
+import { useNavigate } from 'react-router-dom'
+import {toast,ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import { userSignup } from '../../../services/userApi'
 import './signup.css'
 
 function Signup() {
+  const [userDetails,setUserDetails]=useState({
+    email:'',
+    name:'',
+    password:'',
+    confirmPassword:''
+  })
+  const [isLoading,setIsLoading]=useState(false)
+
+  const navigate=useNavigate()
+
+  function handleChange(e){
+    const {name,value}=e.target
+    setUserDetails((prev)=>({
+      ...prev,
+      [name]:value
+    }))
+  }
+
+  function handleSubmit(e){
+    e.preventDefault()
+    setIsLoading(true)
+    userSignup(userDetails).then((result)=>{
+      navigate('/otp')
+    }).catch((err)=>{
+      console.log(err)
+      toast.error(err)
+    }).finally(()=>{
+      setIsLoading(false)
+    })
+  }
   return (
+    <>
+
+    {isLoading ? (
+        <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+        <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0" >
+          <i className="fas fa-circle-notch fa-spin fa-5x"></i>
+        </span>
+        </div>
+      ) : (
     <body className="bg-white">
 
   <div className="flex min-h-screen">
@@ -31,10 +74,22 @@ function Signup() {
             <p className="text-md md:text-xl">Sign up or log in to place the order, password required!</p>
           </div>
           <div className="flex flex-col max-w-md space-y-5">
-            <input type="text" placeholder="Username"
+          <form onSubmit={handleSubmit} className="flex flex-col max-w-md space-y-2">
+                <label htmlFor="">Name</label>
+            <input type="text" placeholder="Username" name='name' onChange={handleChange}
+              className="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal" /> 
+                <label htmlFor="">Email</label>
+              <input type="email" placeholder="Email" name='email' onChange={handleChange}
+              className="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal" /> 
+                
+             <label htmlFor="">Password</label>
+              <input type="password" placeholder="Password" name='password' onChange={handleChange}
+              className="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal" /> 
+                <label htmlFor="">Confirm Password</label>
+              <input type="password" placeholder="Confirm Password" name='confirmPassword' onChange={handleChange}
               className="flex px-3 py-2 md:px-4 md:py-3 border-2 border-black rounded-lg font-medium placeholder:font-normal" />
-            <button className="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white">Confirm
-              with email</button>
+            <button type='submit' className="flex items-center justify-center flex-none px-3 py-2 md:px-4 md:py-3 border-2 rounded-lg font-medium border-black bg-black text-white">Submit</button>
+            </form>
             <div className="flex justify-center items-center">
               <span className="w-full border border-black"></span>
               <span className="px-4">Or</span>
@@ -56,9 +111,16 @@ function Signup() {
 
       </div>
     </div>
-
+<ToastContainer/>
+    
   </div>
 </body>
+)}
+<link
+    rel="stylesheet"
+    href="https://kit-pro.fontawesome.com/releases/v5.15.1/css/pro.min.css"
+  />
+</>
   )
 }
 

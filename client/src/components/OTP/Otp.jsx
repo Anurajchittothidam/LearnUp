@@ -1,11 +1,15 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from "react-router-dom";
-import { useFormik, Formik } from 'formik';
+import { useFormik } from 'formik';
+import {toast,ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 import './Otp.css';
-// import 'boxicons/css/boxicons.min.css';
-import {addTeachersOtp} from '../../services/adminApi'
-function Otp() {
+import {addTeachersOtp,addTeacherResendOtp} from '../../services/adminApi'
+import { resendOtp, userSignupOtp, verifyForgot } from '../../services/userApi';
+import { teacherSignupOtp,verifyTeacherForgot,teacherResendOtp } from '../../services/teacherApi';
+function Otp(props) {
+    const [isLoading,setIsLoading]=useState(false)
     const navigate = useNavigate();
     const inputRef = useRef({});
     function validate(values) {
@@ -40,14 +44,78 @@ function Otp() {
     })
 
     const handleSubmit=(values)=>{
+        setIsLoading(true)
         console.log("handle Submit");
-        addTeachersOtp(values)
+        if(props.data==='admin'){
+            addTeachersOtp(values)
+            .then((response) => {
+                if (response) {
+                    navigate("/admin/teachers")
+                }else{
+                    toast.error(response.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err.message)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }else if(props.data==='teacher'){
+            console.log('dfsf')
+            teacherSignupOtp(values)
         .then((response) => {
-            console.log(response.data);
-            if (response.data.status) {
-                navigate("/admin/teachers")
+            if (response) {
+                navigate("/teachers/login")
+            }else{
+                toast.error(response.data.message)
             }
+        }).catch((err)=>{
+            toast.error(err.message)
+        }).finally(()=>{
+            setIsLoading(false)
         })
+        }else if(props.data==='user'){
+            userSignupOtp(values).then((response)=>{
+                if(response){
+                    navigate('/login')
+                }else{
+                    toast.error(response.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err.message)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }else if(props.data==='user-forgot'){
+            verifyForgot(values).then((response)=>{
+                if(response){
+                    navigate('/login')
+                }else{
+                    toast.error('error')
+                    toast.error(response.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err.message)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }else if(props.data==='teacher-forgot'){
+            verifyTeacherForgot(values).then((response)=>{
+                if(response){
+                    navigate('/teachers/login')
+                }else{
+                    toast.error(response.data)
+                }
+            }).catch((err)=>{
+                console.log(err)
+                toast.error(err.message)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }
+        else{
+            toast.error('props error')
+        }
+        
     }
 
     const [otp, setOtp] = useState({
@@ -126,8 +194,85 @@ function Otp() {
         ))
     }
 
+    function  handleResend(){
+        setIsLoading(true)
+        if(props.data==='user'){
+            resendOtp().then((res)=>{
+                if(res){
+                    navigate('/otp')
+                }else{
+                    toast.error(res.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }else if(props.data==='teacher'){
+            teacherResendOtp().then((res)=>{
+                if(res){
+                    navigate('/teachers/otp')
+                }else{
+                    toast.error(res.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }else if(props.data==='admin'){
+                addTeacherResendOtp().then((result)=>{
+                  if(result){
+                    navigate('/admin/teachers/otp')
+                  }else{
+                    toast.error(result.data.message)
+                  }
+                }).catch((err)=>{
+                  toast.error(err)
+                }).finally(()=>{
+                  setIsLoading(false)
+                })
+        }else if(props.data==='user-forgot'){
+            resendOtp().then((res)=>{
+                if(res){
+                    navigate('/user-forgot/otp')
+                }else{
+                    toast.error(res.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }else if(props.data==='teacher-forgot'){
+            teacherResendOtp().then((res)=>{
+                if(res){
+                    navigate('/teachers/forgot')
+                }else{
+                    toast.error(res.data.message)
+                }
+            }).catch((err)=>{
+                toast.error(err)
+            }).finally(()=>{
+                setIsLoading(false)
+            })
+        }
+        else{
+            toast.error('props error')
+        }
+        
+    }
+
     return (
         <section className='section-box'>
+            {isLoading ? (
+              <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+              <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0" >
+                <i className="fas fa-circle-notch fa-spin fa-5x"></i>
+              </span>
+              </div>
+            ) : (
+              <>
             <form action="">
                 <div className='grid-cols-1 shadow-none sm:shadow-xl form-box p-7'>
                     <h2 style={{ color: "#6255a4" }} className='text-center text-2xl font-medium pb-5'>Enter OTP</h2>
@@ -145,9 +290,17 @@ function Otp() {
                             Submit
                         </button>
                     </div>
-
+                    <button className='text-blue-500' onClick={handleResend}>resend</button>
                 </div>
             </form>
+            <ToastContainer/>
+     
+            </>
+            )}
+                   <link
+    rel="stylesheet"
+    href="https://kit-pro.fontawesome.com/releases/v5.15.1/css/pro.min.css"
+  />
         </section >
     )
 }

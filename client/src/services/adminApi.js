@@ -15,11 +15,19 @@ export const blockUnblockUser=(e)=>{
 
 
 export const addTeachers=(teacherData)=>{
-    return axios('adminJwtToken').post('/admin/teachers/add',{...teacherData})
+    return axios('adminJwtToken').post('/admin/teachers/add',{...teacherData,action:'send'})
 }
 
-export const addTeachersOtp=(Otp)=>{
-    return axios('adminJwtToken').post('/admin/teachers/otp',{Otp})
+export const addTeachersOtp=(values)=>{
+    return axios('adminJwtToken').post('/admin/teachers/add',{otp:values.otp.join(''),action:'verify'})
+}
+
+// export const googleAuth=(value)=>{
+//     return axios('adminJwtToken').post('/teacher/auth/google',{...value})
+// }
+
+export const addTeacherResendOtp=()=>{
+    return axios('adminJwtToken').post('/admin/teachers/resend')
 }
 
 export const getCategories=()=>{
@@ -37,3 +45,4 @@ export const addCategories=(name)=>{
 export const editCategory=({name,id})=>{
     return axios("adminJwtToken").put(`/admin/categories/edit/${id}`,{name})
 }
+

@@ -3,20 +3,32 @@ import axios from "../../../axios";
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
+import { adminLogin } from "../../../services/adminApi";
+import {useDispatch,useSelector} from 'react-redux'
+import { setAdminDetails } from "../../../redux/features/adminAuth";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading,setIsLoading]=useState(false)
   const navigate = useNavigate();
+  const dispatch=useDispatch()
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      const adminDetails={email,password}
       setIsLoading(true)
-      await axios("adminJwtToken").post("/admin/login", { email, password }).then((res)=>{
-        console.log(res);
-        navigate("/admin/");
+      adminLogin(adminDetails).then((res)=>{
+        if(res.data.login){
+          localStorage.setItem('adminJwtToken',res.data.token)
+          dispatch(setAdminDetails({
+            email:res.data.email,
+            login:res.data.login,
+            token:res.data.token
+          }))
+          navigate("/admin/");
+        }
       }).catch((err)=>{
         toast.error(err)
       }).finally(()=>{

@@ -1,12 +1,18 @@
 import express from 'express'
-const route=express.Router()
-import { teacherLogin, teacherSignup, verifyOtp } from '../controller/teacherController.js'
+const router=express.Router()
+import { forgotPassword, googleAuth, resendOtp, teacherLogin, teacherSignup, verifyOtp } from '../controller/teacherController.js'
 
-route.post('/login',teacherLogin)
+router.post('/login',teacherLogin)
 
-route.post('/signup',teacherSignup)
+router.post('/signup',teacherSignup)
 
-route.post('/Otp',verifyOtp)
+router.post('/Otp',verifyOtp)
+
+router.patch('/forgot',forgotPassword)
+
+router.post('/resend',resendOtp)
+
+router.post('/auth/google',googleAuth)
 
 
-export default route
+export default router

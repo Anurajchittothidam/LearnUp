@@ -48,7 +48,7 @@ const verifyOTP=(Otp)=>{
         if(OtpValue==Otp){
             resolve({status:true})
         }else{
-            reject()
+            reject({staus:false})
         }
     }).catch((err)=>{
         console.log(err)

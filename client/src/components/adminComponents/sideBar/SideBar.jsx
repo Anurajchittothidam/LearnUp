@@ -4,7 +4,6 @@ import {useNavigate} from 'react-router-dom'
 function SideBar() {
     const navigate=useNavigate()
   return (
-    <div className="flex overflow-hidden bg-white pt-16">
     <aside  className="fixed hidden z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75" aria-label="Sidebar">
        <div className="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white pt-0">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -64,8 +63,6 @@ function SideBar() {
           </div>
        </div>
     </aside>
- </div>
-
   )
 }
 

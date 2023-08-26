@@ -26,6 +26,17 @@ const userSchema=new mongoose.Schema({
     role:{
         type:String,
         default:'users'
+    },
+    googleId:{
+        type:String,
+        allowNull:true
+    },
+    loginWithGoogle:{
+        type:Boolean,
+        default:false
+    },
+    picture:{
+        type:String
     }
 })
 

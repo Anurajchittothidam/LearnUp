@@ -2,11 +2,9 @@ import React,{useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import { forgotPassword, googleAuth, userLogin } from '../../../services/userApi'
+import { teacherLogin,googleAuth,forgotPassword} from '../../services/teacherApi';
 import { useGoogleLogin } from '@react-oauth/google';
-import jwt_decode from "jwt-decode";
 
-import './login.css'
 function Login() {
   const [userDetails,setUserDetails]=useState({
     email:'',
@@ -28,8 +26,8 @@ function Login() {
 
   function handleSubmit(){
     setIsLoading(true)
-    userLogin(userDetails).then((result)=>{
-      navigate('/')
+    teacherLogin(userDetails).then((result)=>{
+      navigate('/teachers')
     }).catch((err)=>{
       toast.error(err)
     }).finally(()=>{
@@ -42,7 +40,7 @@ function Login() {
     forgotPassword(userDetails).then((res)=>{
       console.log(res)
       if(res.status){
-        navigate('/user-forgot/otp')
+        navigate('/teachers/forgot')
       }else{
         toast.error(res.message)
       }
@@ -57,7 +55,7 @@ function Login() {
     onSuccess: tokenResponse => {
       googleAuth(tokenResponse).then((res)=>{
         if(res){
-          navigate('/')
+          navigate('/teachers/')
         }
       }).catch((err)=>{
         toast.error(err)

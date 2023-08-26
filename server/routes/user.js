@@ -1,12 +1,17 @@
 import express from 'express'
-const route=express.Router()
-import { verifyOtp, userLogin, userSignup } from '../controller/userController.js'
+const router=express.Router()
+import { userLogin, userSignup, forgotPassword, resendOtp, googleAuth } from '../controller/userController.js'
 
-route.post('/signup',userSignup)
-
-route.post('/otp',verifyOtp)
-
-route.post('/login',userLogin)
+router.post('/signup',userSignup)
 
 
-export default route
+router.post('/login',userLogin)
+
+router.patch('/forgot',forgotPassword)
+
+router.post('/resend',resendOtp)
+
+router.post('/auth/google',googleAuth)
+
+
+export default router

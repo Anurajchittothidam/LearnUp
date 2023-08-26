@@ -65,6 +65,7 @@ const UserTeacher=(props)=> {
     <>
     
       <NavBar />
+
       <SideBar />
       <div
         id="main-content"
@@ -79,8 +80,9 @@ const UserTeacher=(props)=> {
               </div>
             ) : (
               <>
+
                <main>
-                <div className="pt-10 px-5 ">
+                <div className="pt-20 px-5 ">
                 {userDetails?.length === 0 ? (
                   <h1 className="flex justify-center">No user found</h1>
                 ) : (
@@ -145,8 +147,10 @@ const UserTeacher=(props)=> {
                 </table>
                 </>
                 )}
-                 </div>
+ </div>
+
               </main>
+
               </>
             )}
          

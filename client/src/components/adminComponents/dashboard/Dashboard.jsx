@@ -8,10 +8,9 @@ function Dashboard() {
   return (
     <>
   {/* <!-- This is an example component --> */}
-<div>
-<NavBar/>
-<SideBar/>
-  
+  <div>
+   <NavBar/>
+   <SideBar/>
       {/* <div classNameName="bg-gray-900 opacity-50 hidden fixed inset-0 z-10" id="sidebarBackdrop"></div> */}
       <div id="main-content" className="h-full bg-gray-50 relative overflow-y-auto lg:ml-64">
          <main>
@@ -299,8 +298,8 @@ function Dashboard() {
          </main>
          
       </div>
-  
 </div>
+  
     </>
    
   )

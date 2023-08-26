@@ -6,11 +6,11 @@ let OtpValue;
 
 const sendEmail=(email)=>{
     const OTP=Math.floor(1000+Math.random()*9000)
-    return new Promise((resolve,reject)=>{
+    return new Promise(async(resolve,reject)=>{
         const transporter=nodemailer.createTransport({
             host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false,
             auth: {
               user: process.env.EMAIL,
               pass: process.env.PASS,
@@ -28,7 +28,7 @@ const sendEmail=(email)=>{
             `,
           }
       
-          transporter.sendMail(mailOptions, function (error, info) {
+         await transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
               console.log("error", error, info)
               reject(error)
@@ -45,10 +45,12 @@ const sendEmail=(email)=>{
 
 const verifyOTP=(Otp)=>{
     return new Promise((resolve,reject)=>{
+      console.log(Otp)
+      console.log(OtpValue)
         if(OtpValue==Otp){
-            resolve({status:true})
+            resolve({status:true,message:'Successfull'})
         }else{
-            reject()
+            reject({status:false,message:'Invalid Otp'})
         }
     }).catch((err)=>{
         console.log(err)

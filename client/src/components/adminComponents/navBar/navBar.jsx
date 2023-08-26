@@ -3,9 +3,9 @@ import SideBar from '../sideBar/SideBar.jsx';
 function NavBar() {
    const [isSidebarVisible, setSidebarVisibility] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarVisibility((prevState) => !prevState);
-  };
+   const toggleSidebar = () => {
+     setSidebarVisibility((prevState) => !prevState);
+   };
   return (
     <>
      {/* <nav className="bg-white border-b border-gray-200 fixed z-30 w-full">
@@ -60,7 +60,12 @@ function NavBar() {
       </div>
    </nav> */}
 
-  
+
+{isSidebarVisible && (
+  <>
+ <SideBar/>
+  </>
+)}
 
     <nav className="bg-white border-b border-gray-200 fixed z-30 w-full">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
@@ -133,14 +138,6 @@ function NavBar() {
         </div>
       </div>
     </nav>
-
-      {isSidebarVisible && (
-        <>
-       <SideBar/>
-        </>
-      )}
-
-
     </>
   )
 }
