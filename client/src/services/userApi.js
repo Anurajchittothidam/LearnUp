@@ -28,3 +28,7 @@ export const verifyForgot=(value)=>{
 export const googleAuth=(value)=>{
     return axios('JwtToken').post('/auth/google',{...value})
 }
+
+export const userAuth=()=>{
+    return axios('JwtToken').get('/auth')
+}

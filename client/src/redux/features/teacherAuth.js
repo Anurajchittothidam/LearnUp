@@ -1,31 +1,32 @@
 import {createSlice} from '@reduxjs/toolkit'
 
-const initialState=({
-    id:'',
-    token:'',
-    login:'',
-    email:'',
-    name:'',
-})
 
-const teacherAuth=createSlice({
+
+export const teacherAuth=createSlice({
     name:'teacher',
-    initialState,
+    initialState:{
+        id:'',
+        token:'',
+        login:'',
+        time:'',
+    },
     reducers:{
+        setOtp:(state,action)=>{
+            state.time=action.payload.time
+        },
         setTeacherDetails:(state,action)=>{
-            state.id=action.payload.id,
-            state.name=action.payload.name,
-            state.email=action.payload.email,
-            state.token=action.payload.token
+            const {id,token}=action.payload
+            console.log(action.payload)
+            state.id=id,
+            state.token=token
         },
         setTeacherSignOut:(state,action)=>{
             state.token=null,
-            state.email=null,
-            state.name=null,
             state.id=null
         }
     }
 })
 
+console.log('teacher',teacherAuth)
 export const {setTeacherDetails,setTeacherSignOut} =teacherAuth.actions
 export default teacherAuth.reducer

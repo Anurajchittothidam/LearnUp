@@ -9,13 +9,14 @@ const verifyToken=(req,res,next)=>{
         const token=authHeader.split(' ')[1]
         jwt.verify(token,secretId,async (err,decoded)=>{
             if(err){
-                res.status(400).json({status:false,message:'Permission denied',err})
+               return res.status(400).json({status:false,message:'Permission denied',err})
             }else{
                 const admin=process.env.ADMIN_EMAIL===decoded.email
+
                 if(admin){
                     next()
                 }else{
-                    res.status(400).json({status:false,message:"no admin found"})
+                   return res.status(400).json({status:false,message:"no admin found"})
                 }
             }
         })

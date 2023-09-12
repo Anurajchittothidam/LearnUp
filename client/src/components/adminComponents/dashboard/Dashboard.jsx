@@ -1,10 +1,21 @@
 import React from 'react'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { authAdmin } from '../../../services/adminApi.js'
 // import './Dashboard.css' 
 import NavBar from '../navBar/navBar.jsx'
 import SideBar from '../sideBar/SideBar.jsx'
 
 function Dashboard() {
-  
+   const navigate=useNavigate()
+  useEffect(()=>{
+   authAdmin().then((res)=>{
+      
+   }).catch((err)=>{
+      navigate('/admin/login')
+   })
+  })
   return (
     <>
   {/* <!-- This is an example component --> */}

@@ -1,10 +1,9 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import { forgotPassword, googleAuth, userLogin } from '../../../services/userApi'
+import { forgotPassword, googleAuth, userAuth, userLogin } from '../../../services/userApi'
 import { useGoogleLogin } from '@react-oauth/google';
-import jwt_decode from "jwt-decode";
 
 import './login.css'
 function Login() {
@@ -26,9 +25,20 @@ function Login() {
     }))
   }
 
+  useEffect(()=>{
+    userAuth().then((res)=>{
+      if(res){
+        navigate('/')
+      }
+    }).catch((err)=>{
+      cosole.log(err)
+    })
+  },[])
+
   function handleSubmit(){
     setIsLoading(true)
     userLogin(userDetails).then((result)=>{
+      localStorage.setItem('JwtToken',result?.data?.token)
       navigate('/')
     }).catch((err)=>{
       toast.error(err)
@@ -57,6 +67,7 @@ function Login() {
     onSuccess: tokenResponse => {
       googleAuth(tokenResponse).then((res)=>{
         if(res){
+          localStorage.setItem('JwtToken',res?.data?.token)
           navigate('/')
         }
       }).catch((err)=>{

@@ -4,6 +4,10 @@ export const adminLogin=(adminData)=>{
     return axios("adminJwtToken").post('/admin/login',{...adminData})
 }
 
+export const authAdmin=()=>{
+    return axios('adminJwtToken').get('/admin/auth')
+}
+
 export const getUsers=(name)=>{
     return axios("adminJwtToken").get(`/admin/${name}`)
 } 

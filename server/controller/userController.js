@@ -133,17 +133,16 @@ const userLogin=async(req,res)=>{
         }else{
             const userExist=await users.findOne({email:email,role:'users'})
             if(userExist){
-                const userBlock=await users.findOne({email,block:true,role:'users'})
-                if(!userBlock){
-             const isMatch=await bcrypt.compare(password,userExist.password)
+                if(userExist.block===true){
+                   return res.status(400).json('This account blocked')
+            }else{
+                const isMatch=await bcrypt.compare(password,userExist.password)
              if(!isMatch){
                 res.status(400).json('This password not match')
              }else{
                  const token=createToken(userExist._id)
                 return res.status(200).json({userExist,token})
              }
-            }else{
-                res.status(400).json('This account blocked')
             }
             }else{
              res.status(400).json('This user Not Exist')
@@ -152,6 +151,40 @@ const userLogin=async(req,res)=>{
     }catch(err){
         console.log(err)
     }
+}
+
+const userAuth=(req,res)=>{
+    try{
+const secret=process.env.SECRET_KEY
+
+        // getting the token from request headers
+        const authHeader=req.headers.authorization
+        if(authHeader){
+            const token=authHeader.split(' ')[1]
+            jwt.verify(token,secret,async(err,decoded)=>{
+                if(err){
+                   return res.status(400).json({status:false,message:"Permission not allowed"})
+                }else{
+                    //finding user with decoded id
+                    const User=await users.findById(decoded.id)
+                    if(User){
+                        if(User.block===true){
+                           return res.status(400).json({status:false,message:"Your accound blocked"})
+                        }else{
+                             // if user exist passing the user id with the request
+                          return res.status(200).json({userId:decoded.id}) 
+                        }
+                    }else{
+                       return res.status(400).json({status:false,message:"User not exist"})
+                    }
+                }
+            })
+        }else{
+           return res.status(400).json({status:false,message:"No token found"})
+        }
+        }catch(err){
+           return res.status(200).json('Something went wrong')
+        }
 }
 
 const forgotPassword=async(req,res)=>{
@@ -190,10 +223,10 @@ const forgotPassword=async(req,res)=>{
                         if(result){
                             res.status(200).json('Password Changed')
                         }else{
-                            res.status(400).json('User not found')
+                           return res.status(400).json('User not found')
                         }
                     }).catch((err)=>{
-                        res.status(400).json(err.message)
+                       return res.status(400).json(err.message)
                     })
                 }else{
                     return res.status(400).json({status:false,message:'Invalid Otp'})
@@ -203,11 +236,11 @@ const forgotPassword=async(req,res)=>{
             })
             }
         }else{
-            res.status(400).json('Some error Occured')
+           return res.status(400).json('Some error Occured')
         }
     }catch(err){
-        res.status(400).json('Something went wrong')
+       return res.status(400).json('Something went wrong')
     }
 }
 
-export {userLogin,userSignup,forgotPassword,resendOtp,googleAuth}
+export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth}

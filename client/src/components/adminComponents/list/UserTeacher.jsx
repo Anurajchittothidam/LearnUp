@@ -15,10 +15,16 @@ const UserTeacher=(props)=> {
       setIsLoading(true);
         getUsers(props.data)
         .then((res) => {
+          console.log(res)
           setUserDetails(res.data);
         })
         .catch((err) => {
-          toast.error(err);
+          console.log(err)
+          if(err.status===false){
+            navigate('/admin/login')
+          }else{
+          toast.error(err.message);
+          }
         })
         .finally(() => {
           setIsLoading(false);

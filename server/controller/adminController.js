@@ -33,6 +33,33 @@ const adminLogin=async (req,res)=>{
     }
 }
 
+const authAdmin=async(req,res)=>{
+    try{
+    const secretId=process.env.SECRET_KEY
+    const authHeader=req.headers.authorization
+    if(authHeader){
+        const token=authHeader.split(' ')[1]
+        jwt.verify(token,secretId,async (err,decoded)=>{
+            if(err){
+                res.status(400).json({status:false,message:'Permission denied',err})
+            }else{
+                const admin=process.env.ADMIN_EMAIL===decoded.email
+                if(admin){
+                    res.status(200).json({stus:true,message:'authorized'})
+                }else{
+                    res.status(400).json({status:false,message:"no admin found"})
+                }
+            }
+        })
+    }else{
+        res.status(400).json({status:false,message:"Token not found"})
+        next()
+    }
+    }catch(err){
+    res.status(400).json('Something went wrong')
+    }
+}
+
 const getAllUsers=async (req,res)=>{
     try{
         const userList=await users.find({role:'users'})
@@ -188,7 +215,7 @@ const getAllCategories=async(req,res)=>{
 const addCategory=async(req,res)=>{
     try{
         const {name}=req.body
-        const categoryExist=await categories.findOne({name})
+        const categoryExist=await categories.findOne({ name: { $regex: new RegExp('^' + name + '$', 'i') } })
         if(!categoryExist){
             const newCategory=new categories({
                 name
@@ -226,7 +253,7 @@ const editCategory=async(req,res)=>{
     try{
         const {name}=req.body
         const id=req.params.id
-        const categoryExist=await categories.findOne({name})
+        const categoryExist=await categories.findOne({ name: { $regex: new RegExp('^' + name + '$', 'i') } })
         if(!categoryExist){
             const edited=await categories.updateOne({_id:id},{$set:{name}})
             return res.status(200).json(edited)
@@ -239,4 +266,4 @@ const editCategory=async(req,res)=>{
     }
 }
 
-export {adminLogin,blockUnblockUser,getAllUsers,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}
+export {adminLogin,authAdmin,blockUnblockUser,getAllUsers,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}

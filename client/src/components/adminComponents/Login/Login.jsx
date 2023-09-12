@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "../../../axios";
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
-import { adminLogin } from "../../../services/adminApi";
+import { adminLogin,authAdmin } from "../../../services/adminApi";
 import {useDispatch,useSelector} from 'react-redux'
 import { setAdminDetails } from "../../../redux/features/adminAuth";
 
@@ -13,6 +13,12 @@ function Login() {
   const [isLoading,setIsLoading]=useState(false)
   const navigate = useNavigate();
   const dispatch=useDispatch()
+
+  useEffect(()=>{
+    authAdmin().then((res)=>{
+      navigate('/admin/')
+    })
+  },[])
 
   async function handleSubmit(e) {
     e.preventDefault();

@@ -4,7 +4,10 @@ import bcrypt from 'bcrypt'
 import { sendEmail,verifyOTP } from '../helpers/sendMailTeacher.js';
 import jwt from 'jsonwebtoken';
 import axios from 'axios'
+import handleUpload from '../middlewares/imageUpload.js';
+import Multer from 'multer'
 import dotenv from 'dotenv'
+import mongoose from 'mongoose';
 dotenv.config()
 
 let userDetails;
@@ -32,7 +35,7 @@ const teacherLogin=async(req,res)=>{
                     return res.status(400).json('Incorrect password')
                 }else{
                     const token=createToken(teacherExist._id)
-                    return res.status(200).json({teacherExist,token})
+                    return res.status(200).json({id:teacherExist._id,token:token})
                 }
                 }else{
                     return res.status(400).json('This accound blocked')
@@ -129,22 +132,20 @@ const teacherSignup=async (req,res)=>{
 
 const editProfile=async(req,res)=>{
     try{
-        const {id,email,name,phoneNumber,about}=req.body
-        if(!email || !name || !phoneNumber || !about){
+        const {id,email,name,phoneNumber,about,place}=req.body
+        if(!email || !name || !phoneNumber || !about || !place){
             return res.status(400).json('Enter the complete fields')
         }else{
             const emailExist=await users.findOne({email,role:'teachers'})
-            // const teacher=await users.findOne({_id:id})
             if(!emailExist){
-                const updated=await teachers.updateOne({_id:id},{$set:{email,name,phoneNumber,about}})
+                const updated=await users.updateOne({_id:id},{$set:{email,name,phoneNumber,about,place}})
                 return res.status(200).json(updated)
-            }else if(emailExist.email===email){
-                const updated=await teachers.updateOne({_id:id},{$set:{email,name,phoneNumber,about}})
+            }else if(emailExist._id.toString()===id){
+                const updated=await users.updateOne({_id:id},{$set:{email,name,phoneNumber,about,place}})
                 return res.status(200).json(updated)
             }else{
                 return res.status(400).json('This email alredy exist')
             }
-             
         }
     }catch(err){
         return res.status(500).json('Something went wrong')
@@ -203,7 +204,7 @@ const forgotPassword=async(req,res)=>{
             res.status(400).json('Some error Occured')
         }
     }catch(err){
-        res.status(400).json('Something went wrong')
+        res.status(400).json({message:'Something went wrong',err})
     }
 }
 
@@ -220,10 +221,10 @@ const googleAuth=(req,res)=>{
                         return res.status(400).json("Sorry you are banned...")
                     }else{
                         const token=createToken(userExist._id)
-                        return res.status(200).json({token,userExist,message:'Login Success'})
+                        return res.status(200).json({token:token,id:userExist._id,message:'Login Success'})
                     }
                 }else{
-                    const newUser=users.create({
+                    const newUser=await users.create({
                         googleId:result.data.id,
                         name:result.data.given_name,
                         email:result.data.email,
@@ -233,7 +234,7 @@ const googleAuth=(req,res)=>{
                         password:result.data.id
                     })
                     const token=createToken(newUser._id)
-                    return res.status(200).json({token,newUser,message:'Signup Success'})
+                    return res.status(200).json({token:token,id:newUser._id,message:'Signup Success'})
                 }
             })
         }else{
@@ -243,6 +244,39 @@ const googleAuth=(req,res)=>{
         console.log(err)
         return res.status(400).json('Something went wrong')
     }
+}
+
+const authTeacher=(req,res)=>{
+    try{
+        const secret=process.env.SECRET_KEY
+                const authHeader=req.headers.authorization
+            if(authHeader){
+                const token=authHeader.split(' ')[1]
+                jwt.verify(token,secret,async(err,decoded)=>{
+                    if(err){
+                       return res.status(400).json({status:false,message:"Permission not allowed",err})
+                    }else{
+                        //finding teacher with decoded id
+                        const Teacher=await users.findById(decoded.id)
+                        if(Teacher){
+                            if(Teacher.block===true){
+                                res.status(400).json({status:false,message:"Your accound blocked"})
+                            }else{
+                                 // if user exist passing the user id with the request
+                                res.status(200).json({status:true,teacher:Teacher,message:'authorised'})
+                                req.teacherId=decoded.id
+                            }
+                        }else{
+                           return res.status(400).json({status:false,message:"Teacher not exist"})
+                        }
+                    }
+                })
+            }else{
+               return res.status(400).json({status:false,message:"No token found"})
+            }
+            }catch(err){
+                return res.status(400).json('Something went wrong')
+            }
 }
 
 
@@ -275,4 +309,48 @@ const getAllUsers=async (req,res)=>{
         res.status(500).json('Something went wrong')
     }
 }
-export {teacherLogin,teacherSignup,getAllUsers,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}
+
+const getTeacher=async(req,res)=>{
+    try{
+        const id=new mongoose.Types.ObjectId(req.body)
+        const teacher=await users.findOne({_id:id})
+        if(teacher){
+            return res.status(200).json({teacher})
+        }else{
+            return res.status(400).json('Teacher not found')
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const uploadImage=async(req,res)=>{
+    try{
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        const cldRes = await handleUpload(dataURI);
+        const {id}=req.body
+        const url=cldRes.url
+        const imageUpdated=await users.updateOne({_id:id},{$set:{picture:url}})
+        if(imageUpdated){
+            res.status(200).json({image:cldRes})
+        }else{
+            res.status(400).json('image not uploaded in the database')
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const addCourse=async(req,res)=>{
+    try{
+        
+    }catch(err){
+        return res.status(400).json("Something went wrong")
+    }
+}
+
+
+export {teacherLogin,authTeacher,teacherSignup,getTeacher,getAllUsers,uploadImage,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}

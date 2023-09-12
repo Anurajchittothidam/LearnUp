@@ -26,7 +26,11 @@ function Category() {
         setCategories(res.data);
       })
       .catch((err) => {
-        toast.error(err);
+        if(err.status===false){
+          navigate('/admin/login')
+        }else{
+        toast.error(err.message);
+        }
       })
       .finally(() => {
         setIsLoading(false);

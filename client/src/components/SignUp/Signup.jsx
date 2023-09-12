@@ -1,9 +1,9 @@
-import React,{useState} from  'react'
+import React,{useEffect, useState} from  'react'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import { addTeachers} from '../../services/adminApi'
-import { teacherSignup } from '../../services/teacherApi';
+import { addTeachers, authAdmin} from '../../services/adminApi'
+import { authTeacher, teacherSignup } from '../../services/teacherApi';
 import './signup.css'
 
 function Signup(props) {
@@ -17,6 +17,24 @@ function Signup(props) {
         confirmPassword:'',
         role:'teacher'
     })
+
+    useEffect(()=>{
+      if(props.data==='teacher'){
+        authTeacher().then((res)=>{
+
+        }).catch((err)=>{
+          navigate('/teachers/signup')
+        })
+      }else{
+        authAdmin().then((res)=>{
+          // if(res){
+
+          // }
+        }).catch((err)=>{
+          navigate('/admin/login')
+        })
+      }
+    },[])
 
     function changeInput(e){
         const {name,value}=e.target

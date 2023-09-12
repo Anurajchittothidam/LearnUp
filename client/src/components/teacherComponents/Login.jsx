@@ -1,9 +1,11 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import { teacherLogin,googleAuth,forgotPassword} from '../../services/teacherApi';
+import { teacherLogin,googleAuth,forgotPassword, authTeacher} from '../../services/teacherApi';
+import {useDispatch,useSelector} from 'react-redux'
 import { useGoogleLogin } from '@react-oauth/google';
+import { setTeacherDetails } from '../../redux/features/teacherAuth';
 
 function Login() {
   const [userDetails,setUserDetails]=useState({
@@ -13,6 +15,7 @@ function Login() {
   })
   const [isLoading,setIsLoading]=useState(false)
   const [forgotPasswordPop,setForgot]=useState(false)
+  const dispatch=useDispatch()
 
   const navigate=useNavigate()
 
@@ -24,9 +27,20 @@ function Login() {
     }))
   }
 
+  useEffect(()=>{
+    authTeacher().then((res)=>{
+      console.log(res)
+      navigate('/teachers/')
+    })
+  },[])
+
   function handleSubmit(){
     setIsLoading(true)
     teacherLogin(userDetails).then((result)=>{
+      const userDetails=result.data
+      console.log(result.data.token)
+      localStorage.setItem('teacherJwtToken',result.data.token)
+      dispatch(setTeacherDetails(userDetails))
       navigate('/teachers')
     }).catch((err)=>{
       toast.error(err)
@@ -55,6 +69,11 @@ function Login() {
     onSuccess: tokenResponse => {
       googleAuth(tokenResponse).then((res)=>{
         if(res){
+          // const {email,name,phoneNumber,about,picture}=res.data.user
+          const {token,id}=res.data
+          const userDetails={token,id}
+          localStorage.setItem('teacherJwtToken',res.data.token)
+          dispatch(setTeacherDetails(userDetails))
           navigate('/teachers/')
         }
       }).catch((err)=>{

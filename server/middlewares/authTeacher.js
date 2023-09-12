@@ -3,29 +3,28 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const verifyUser=async(req,res,next)=>{
+const verifyTeacher=(req,res)=>{
     try{
-const secret=process.env.SECRET_KEY
-    // getting the token from request headers
-    const authHeader=req.headers.authorization
+        const secret=process.env.SECRET_KEY
+        const authHeader=req.headers.authorization
     if(authHeader){
         const token=authHeader.split(' ')[1]
         jwt.verify(token,secret,async(err,decoded)=>{
             if(err){
                return res.json({status:false,message:"Permission not allowed"})
             }else{
-                //finding user with decoded id
-                const User=await user.findById(decoded.id)
-                if(User){
-                    if(User.block===true){
+                //finding teacher with decoded id
+                const Teacher=await user.findById(decoded.id)
+                if(Teacher){
+                    if(Teacher.block===true){
                        return res.status(400).json({status:false,message:"Your accound blocked"})
                     }else{
                          // if user exist passing the user id with the request
-                        req.userId=decoded.id
+                        req.teacherId=decoded.id
                         next()
                     }
                 }else{
-                   return res.json({status:false,message:"User not exist"})
+                   return res.json({status:false,message:"Teacher not exist"})
                 }
             }
         })
@@ -34,8 +33,10 @@ const secret=process.env.SECRET_KEY
         next()
     }
     }catch(err){
-       return res.status(200).json('Something went wrong')
+        console.log(err)
+        return res.status(400).json('Something went wrong')
     }
 }
 
-export default verifyUser
+
+export default verifyTeacher

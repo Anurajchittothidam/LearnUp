@@ -17,7 +17,6 @@ export const teacherSignupOtp=(values)=>{
 }
 
 export const forgotPassword=(values)=>{
-    console.log('fsdf')
     return axios('teacherJwtToken').patch('/teacher/forgot',{...values,action:'send'})
 }
 
@@ -27,4 +26,22 @@ export const verifyTeacherForgot=(value)=>{
 
 export const teacherResendOtp=()=>{
     return axios('teacherJwtToken').post('/teacher/resend')
+}
+
+export const authTeacher=()=>{
+    return axios('teacherJwtToken').get('/teacher/auth')
+}
+
+export const getTeacher=(id)=>{
+    return axios('teacherJwtToken').post(`/teacher/profile/`,{id})
+}
+
+export const imageUpload=(data)=>{
+    return axios('teacherJwtToken').put('/teacher/uploadImage',data,{headers: {
+        'Content-Type': 'multipart/form-data',
+      }})
+}
+
+export const teacherEditProfile=(data)=>{
+    return axios('teacherJwtToken').put('/teacher/editProfile',{...data})
 }

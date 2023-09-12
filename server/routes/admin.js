@@ -1,12 +1,14 @@
 import express from 'express'
-import { addCategory, addTeachers, adminLogin, blockUnblockCategory, blockUnblockUser, editCategory, getAllCategories, getAllTeachers, getAllUsers, resendOtp } from '../controller/adminController.js'
+import { addCategory,authAdmin, addTeachers, adminLogin, blockUnblockCategory, blockUnblockUser, editCategory, getAllCategories, getAllTeachers, getAllUsers, resendOtp } from '../controller/adminController.js'
 import verifyAdmin from '../middlewares/adminAuth.js'
 import {validateId} from '../middlewares/validateParams.js'
 const router=express.Router()
 
 router.post('/login',adminLogin)
 
-// router.use(verifyAdmin)
+router.get('/auth',authAdmin)
+
+router.use(verifyAdmin)
 
 router.get('/users',getAllUsers)
 
