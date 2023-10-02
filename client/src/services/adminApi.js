@@ -1,4 +1,4 @@
-import axios from "../axios.js"
+import axios from "../../src/axios/axiosAdmin.js"
 
 export const adminLogin=(adminData)=>{
     return axios("adminJwtToken").post('/admin/login',{...adminData})

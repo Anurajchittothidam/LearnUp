@@ -13,6 +13,33 @@ function Otp(props) {
     const navigate = useNavigate();
     const inputRef = useRef({});
     const [remainingTime, setRemainingTime] = useState(60);
+    let backButton;
+
+    switch (props.data) {
+      case 'admin':
+        backButton="/admin/teachers/add"
+        break;
+      case 'teacher':
+        backButton= "/teachers/signup"
+        break;
+        case 'user':
+        backButton="/signup"
+        break;
+      case 'user-forgot':
+        backButton="/login" 
+        break;
+
+      case 'teacher-forgot':
+
+        backButton="/teachers/login" 
+        break;
+
+        default:
+            backButton=""
+      
+    }
+
+
 
     function validate(values) {
 
@@ -273,6 +300,52 @@ function Otp(props) {
     }
 
     return (
+        <>
+        <nav class="bg-white border-b border-gray-200 fixed z-30 w-full">
+            <div class="px-3 py-3 lg:px-5 lg:pl-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center justify-start">
+                  <button
+                    id="toggleSidebarMobile"
+                    aria-expanded="true"
+                    aria-controls="sidebar"
+                    class="lg:hidden mr-2 text-gray-600 hover:text-gray-900 cursor-pointer p-2 hover:bg-gray-100 focus:bg-gray-100 focus:ring-2 focus:ring-gray-100 rounded"
+                  >
+                    <svg
+                      id="toggleSidebarMobileHamburger"
+                      class="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    <svg
+                      id="toggleSidebarMobileClose"
+                      class="w-6 h-6 hidden"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </button>
+                  <a class="text-xl font-bold flex items-center lg:ml-2.5">
+                    <span class="self-center whitespace-nowrap">LearnUp</span>
+                  </a>
+                </div>
+               
+              </div>
+            </div>
+          </nav>
         <section className='section-box'>
             {isLoading ? (
               <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
@@ -282,6 +355,37 @@ function Otp(props) {
               </div>
             ) : (
               <>
+
+          
+          <div className="flex min-h-screen pt-10">
+            <div className="flex flex-row w-full ">
+                  <div className="flex ps-5 pt-10">
+                    <div className="flex cursor-pointer shadow rounded h-8 w-30 mt-2 px-5 pt-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                      <h2
+           className="mx-1"
+           onClick={()=>navigate(backButton)}
+         >
+           Back
+         </h2>
+                     
+                    </div>
+                  </div>
+                  </div>
+                </div>
             <form action="">
                 <div className='grid-cols-1 shadow-none sm:shadow-xl form-box p-7'>
                     <h2 style={{ color: "#6255a4" }} className='text-center text-2xl font-medium pb-5'>Enter OTP</h2>
@@ -305,8 +409,8 @@ function Otp(props) {
                     <button className='text-blue-500' onClick={handleResend}>resend</button>
                 </div>
             </form>
+                
             <ToastContainer/>
-     
             </>
             )}
                    <link
@@ -314,6 +418,7 @@ function Otp(props) {
     href="https://kit-pro.fontawesome.com/releases/v5.15.1/css/pro.min.css"
   />
         </section >
+        </>
     )
 }
 

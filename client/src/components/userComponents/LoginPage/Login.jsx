@@ -6,6 +6,9 @@ import { forgotPassword, googleAuth, userAuth, userLogin } from '../../../servic
 import { useGoogleLogin } from '@react-oauth/google';
 
 import './login.css'
+import Navbar from '../Navbar';
+import { useDispatch } from 'react-redux';
+import { setUserLogin } from '../../../redux/features/userAuth';
 function Login() {
   const [userDetails,setUserDetails]=useState({
     email:'',
@@ -16,6 +19,7 @@ function Login() {
   const [forgotPasswordPop,setForgot]=useState(false)
 
   const navigate=useNavigate()
+  const dispatch=useDispatch()
 
   function handleChange(e){
     const {name,value}=e.target
@@ -31,7 +35,7 @@ function Login() {
         navigate('/')
       }
     }).catch((err)=>{
-      cosole.log(err)
+      console.log(err)
     })
   },[])
 
@@ -39,6 +43,9 @@ function Login() {
     setIsLoading(true)
     userLogin(userDetails).then((result)=>{
       localStorage.setItem('JwtToken',result?.data?.token)
+      console.log(result.data)
+      const {user,token}=result.data
+      dispatch(setUserLogin(user,token))
       navigate('/')
     }).catch((err)=>{
       toast.error(err)
@@ -67,7 +74,11 @@ function Login() {
     onSuccess: tokenResponse => {
       googleAuth(tokenResponse).then((res)=>{
         if(res){
+          console.log('login',res.data.token)
           localStorage.setItem('JwtToken',res?.data?.token)
+      const {user,token}=res.data
+      const data={...user,token:token}
+      dispatch(setUserLogin(data))
           navigate('/')
         }
       }).catch((err)=>{
@@ -85,6 +96,7 @@ function Login() {
         </div>
       ) : (
 <body className="bg-white">
+<Navbar/>
 
   <div className="flex min-h-screen">
 
@@ -97,15 +109,15 @@ function Login() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center px-10 relative">
-        {/* <div className="flex lg:hidden justify-between items-center w-full py-4">
+        <div className="flex lg:hidden justify-between items-center w-full py-4">
           
           <div className="flex items-center space-x-2">
-            <span>Not a member? </span>
-            <a href="#" className="underline font-medium text-[#070eff]">
+            <span>Don't have an account? </span>
+            <a onClick={()=>navigate('/signup')} className="underline font-medium text-[#070eff]">
               Sign up now
             </a>
           </div>
-        </div> */}
+        </div>
         <div className="flex flex-1 flex-col  justify-center space-y-5 max-w-md">
           <div className="flex flex-col space-y-2 text-center">
             <h2 className="text-3xl md:text-4xl font-bold">Sign in to account</h2>
@@ -139,6 +151,15 @@ function Login() {
               </span>
               <span>Sign in with Google</span>
             </button>
+            <h4>
+                      Don't have an account?
+                      <a
+                        className="ps-1 text-blue-500 cursor-pointer"
+                        onClick={() => navigate("/signup")}
+                      >
+                        Sign Up
+                      </a>
+                    </h4>
           </div>
         </div>
 

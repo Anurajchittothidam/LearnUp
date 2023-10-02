@@ -1,4 +1,4 @@
-import axios from '../axios'
+import axios from '../../src/axios/axiosTeacher.js'
 
 export const teacherLogin=(values)=>{
     return axios('teacherJwtToken').post('/teacher/login',{...values})
@@ -45,3 +45,35 @@ export const imageUpload=(data)=>{
 export const teacherEditProfile=(data)=>{
     return axios('teacherJwtToken').put('/teacher/editProfile',{...data})
 }
+
+export const addCourse=(values,course,image,teacherId)=>{
+    return axios('teacherJwtToken').post('/teacher/addCourse',{...values,course,image,teacherId},{ headers: {
+        'Content-Type' : 'multipart/form-data',
+     }})
+}
+
+export const courseList=(id)=>{
+    return axios('teacherJwtToken').post('/teacher/getList',{id})
+}
+
+export const listUnlist=(teacherId,courseId,action)=>{
+    return axios('teacherJwtToken').put('/teacher/listUnlist',{teacherId,courseId,action})
+}
+
+export const getCourse=(courseId)=>{
+    return axios('teacherJwtToken').post('/teacher/getCourse',{courseId})
+}
+
+export const getCategory=()=>{
+    return axios('teacherJwtToken').get('/teacher/getCategory')
+}
+
+export const editCourse=(values,course,image,teacherId,courseId)=>{
+    return axios('teacherJwtToken').post('/teacher/editCourse',{...values,course,image,teacherId,courseId},{
+        headers:{
+            'Content-Type' : 'multipart/form-data',
+         }
+    })
+}
+
+

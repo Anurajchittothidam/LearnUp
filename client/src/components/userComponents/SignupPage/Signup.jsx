@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {toast,ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { userSignup } from '../../../services/userApi'
+import Navbar from '../Navbar';
 import './signup.css'
 
 function Signup() {
@@ -47,6 +48,7 @@ function Signup() {
         </div>
       ) : (
     <body className="bg-white">
+      <Navbar/>
 
   <div className="flex min-h-screen">
 
@@ -62,9 +64,9 @@ function Signup() {
         <div className="flex lg:hidden justify-between items-center w-full py-4">
           
           <div className="flex items-center space-x-2">
-            <span>Not a member? </span>
-            <a href="#" className="underline font-medium text-[#070eff]">
-              Sign up now
+            <span>Alredy have an account? </span>
+            <a onClick={()=>navigate('/login')} className="underline font-medium text-[#070eff]">
+              Login
             </a>
           </div>
         </div>
@@ -106,6 +108,15 @@ function Signup() {
               </span>
               <span>Sign Up with Google</span>
             </button>
+            <h4>
+                      Alredy have an account?
+                      <a
+                        className="ps-1 text-blue-500 cursor-pointer"
+                        onClick={() => navigate("/login")}
+                      >
+                        Login
+                      </a>
+                    </h4>
           </div>
         </div>
 

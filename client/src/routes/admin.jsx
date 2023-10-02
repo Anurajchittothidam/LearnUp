@@ -14,17 +14,17 @@ function AdminComponents() {
   return (
     <Routes>
       <Route element={<PrivateRoute role={'admin'} route={'/admin/login'}/>}>
-        <Route path='/admin' element={<AdminDashboard/>}></Route>
-        <Route path='admin/users' element={<Users/>}></Route>
-        <Route path='admin/teachers' element={<Teachers/>}></Route>
-        <Route path='admin/teachers/add' element={<Signup/>}></Route>
-        <Route path='admin/teachers/otp' element={<Otp data={'admin'}/>}></Route>
-        <Route path='/admin/categories' element={<Categories/>}></Route>
+        <Route path='/' element={<AdminDashboard/>}></Route>
+        <Route path='/users' element={<Users/>}></Route>
+        <Route path='/teachers' element={<Teachers/>}></Route>
+        <Route path='/teachers/add' element={<Signup data={'admin'}/>}></Route>
+        <Route path='/teachers/otp' element={<Otp data={'admin'}/>}></Route>
+        <Route path='/categories' element={<Categories/>}></Route>
       </Route>
        
-        <Route path='/admin/*' element={<Error/>}></Route>
+        <Route path='/*' element={<Error/>}></Route>
 
-        <Route path='admin/login' element={<AdminLogin/>}></Route>
+        <Route path='/login' element={<AdminLogin/>}></Route>
 
     </Routes>
   )

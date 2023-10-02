@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router } from 'react-router-dom'
+import { BrowserRouter as Router ,Routes, Route} from 'react-router-dom'
 import AdminComponents from './routes/admin'
 import UserComponents from './routes/user'
 import Teacher from './routes/teacher'
@@ -10,9 +10,11 @@ function App() {
     <>
     <Router>
 <GoogleOAuthProvider clientId={clientId}>
-    <Teacher/>
-    <AdminComponents/>
-    <UserComponents/>
+  <Routes>
+    <Route path='/teachers/*' element={<Teacher/>}></Route>
+    <Route path='/admin/*' element={<AdminComponents/>}></Route>
+    <Route path='/*' element={<UserComponents/>}></Route>
+  </Routes>
     </GoogleOAuthProvider>
     </Router>
     </>

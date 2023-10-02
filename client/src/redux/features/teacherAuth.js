@@ -15,14 +15,16 @@ export const teacherAuth=createSlice({
             state.time=action.payload.time
         },
         setTeacherDetails:(state,action)=>{
-            const {id,token}=action.payload
+            const {id,token,status}=action.payload
             console.log(action.payload)
             state.id=id,
             state.token=token
+            state.login=status
         },
         setTeacherSignOut:(state,action)=>{
             state.token=null,
             state.id=null
+            state.login=false
         }
     }
 })

@@ -6,6 +6,7 @@ import { teacherLogin,googleAuth,forgotPassword, authTeacher} from '../../servic
 import {useDispatch,useSelector} from 'react-redux'
 import { useGoogleLogin } from '@react-oauth/google';
 import { setTeacherDetails } from '../../redux/features/teacherAuth';
+import Navbar from './teacherNav/Navbar';
 
 function Login() {
   const [userDetails,setUserDetails]=useState({
@@ -29,8 +30,11 @@ function Login() {
 
   useEffect(()=>{
     authTeacher().then((res)=>{
-      console.log(res)
-      navigate('/teachers/')
+      if(res){
+        navigate('/teachers/')
+      }
+    }).catch((err)=>{
+      console.log(err)
     })
   },[])
 
@@ -91,8 +95,8 @@ function Login() {
         </div>
       ) : (
 <body className="bg-white">
-
-  <div className="flex min-h-screen">
+<Navbar data={'login'}/>
+  <div className="flex min-h-screen pt-10">
 
     <div className="flex flex-row w-full ">
 
@@ -102,20 +106,20 @@ function Login() {
        
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center px-10 relative">
-        {/* <div className="flex lg:hidden justify-between items-center w-full py-4">
+      <div className="flex flex-1 flex-col items-center justify-center p-10 relative">
+        <div className="flex lg:hidden justify-between items-center w-full py-4">
           
           <div className="flex items-center space-x-2">
-            <span>Not a member? </span>
-            <a href="#" className="underline font-medium text-[#070eff]">
+            <span>Don't have an account? </span>
+            <a onClick={()=>navigate('/teachers/signup')} className="underline font-medium text-[#070eff]">
               Sign up now
             </a>
           </div>
-        </div> */}
+        </div>
         <div className="flex flex-1 flex-col  justify-center space-y-5 max-w-md">
           <div className="flex flex-col space-y-2 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold">Sign in to account</h2>
-            <p className="text-md md:text-xl">Sign up or log in to place the order,password required!</p>
+            <h2 className="text-3xl md:text-4xl font-bold">Teacher Login</h2>
+            <p className="text-md md:text-lg">Launch Your Teaching Career with LearnUp and Dive into Earning Opportunities!</p>
           </div>
           <div className="flex flex-col max-w-md space-y-5">
           <input type="email" placeholder="Email" name='email' value={userDetails.email} onChange={handleChange}
@@ -145,6 +149,7 @@ function Login() {
               </span>
               <span>Sign in with Google</span>
             </button>
+            <h4>Don't have an account?<a className='text-blue-500 ps-1 cursor-pointer' onClick={()=>navigate('/teachers/signup')}>Sign Up</a></h4>
           </div>
         </div>
 

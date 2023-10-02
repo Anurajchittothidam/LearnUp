@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const courseSchema=mongoose.Schema({
-    title:{
+    name:{
         type:String,
         required:true,
     },
@@ -63,6 +63,12 @@ const courseSchema=mongoose.Schema({
                     videoUrl:String
                 }
             ]
+        }
+    ],
+    entrolled:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'users'
         }
     ],
     image:{

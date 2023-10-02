@@ -4,6 +4,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { getTeacher, teacherEditProfile} from '../../services/teacherApi';
 import { useSelector } from 'react-redux';
+import Navbar from './teacherNav/Navbar';
+import Sidebar from './teacherSideBar/Sidebar';
 
 function EditProfile() {
     const [isLoading,setIsLoading]=useState(false)
@@ -60,26 +62,23 @@ function EditProfile() {
   return (
 
     <>
-
-    {isLoading ? (
-        <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
-        <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0" >
-          <i className="fas fa-circle-notch fa-spin fa-5x"></i>
-        </span>
-        </div>
-      ) : (
-    <body className="bg-white">
-
-  <div className="flex min-h-screen">
-
-    <div className="flex flex-row w-full ">
-
-      <div className="flex flex-1 flex-col items-center justify-center px-10 relative">
-        
-        <div className="flex flex-1 flex-col  justify-center space-y-2 max-w-md">
+ <div>
+ <Navbar/>
+  <div class="flex overflow-hidden bg-white pt-16">
+     <Sidebar/>
+     <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+      {isLoading?(
+           <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
+           <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0" >
+             <i className="fas fa-circle-notch fa-spin fa-5x"></i>
+           </span>
+           </div>
+      ):(
+   <main>
+   <div class="pt-6 px-4 flex flex-col items-center">
+        <div className="w-full flex  flex-col  justify-center  space-y-2 max-w-md">
           <div className="flex flex-col space-y-2 text-center">
             <h2 className="text-3xl md:text-4xl font-bold">Edit Profile</h2>
-            <p className="text-md md:text-xl"></p>
           </div>
           <div className="flex flex-col max-w-md space-y-2">
             <form onSubmit={handleSubmit} className="flex flex-col max-w-md space-y-2">
@@ -104,10 +103,11 @@ function EditProfile() {
         </div>
 
       </div>
+      </main>)}
     </div>
-    <ToastContainer/>
   </div>
-</body>)}
+</div>
+<ToastContainer/>
 <link
     rel="stylesheet"
     href="https://kit-pro.fontawesome.com/releases/v5.15.1/css/pro.min.css"

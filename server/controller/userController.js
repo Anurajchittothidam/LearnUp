@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken'
 import {sendEmail, verifyOTP} from '../helpers/otpVerification.js'
 import axios from 'axios'
 import dotenv from 'dotenv'
+import Course from '../models/courseSchema.js'
+import mongoose from 'mongoose'
 dotenv.config()
 
 let userDetails;
@@ -99,7 +101,7 @@ const googleAuth=(req,res)=>{
                         return res.status(400).json("Sorry you are banned...")
                     }else{
                         const token=createToken(userExist._id)
-                        return res.status(200).json({token,userExist,message:'Login Success'})
+                        return res.status(200).json({token:token,user:userExist,message:'Login Success'})
                     }
                 }else{
                     const newUser=users.create({
@@ -112,7 +114,7 @@ const googleAuth=(req,res)=>{
                         password:result.data.id
                     })
                     const token=createToken(newUser._id)
-                    return res.status(200).json({token,newUser,message:'Signup Success'})
+                    return res.status(200).json({token:token,user:newUser,message:'Signup Success'})
                 }
             })
         }else{
@@ -141,7 +143,7 @@ const userLogin=async(req,res)=>{
                 res.status(400).json('This password not match')
              }else{
                  const token=createToken(userExist._id)
-                return res.status(200).json({userExist,token})
+                return res.status(200).json({user:userExist,token:token})
              }
             }
             }else{
@@ -186,6 +188,56 @@ const secret=process.env.SECRET_KEY
            return res.status(200).json('Something went wrong')
         }
 }
+
+const getAllCourse=async(req,res)=>{
+    try{
+        const courses=await Course.find({block:false})
+        if(courses.length===0){
+            return res.status(200).json({status:false,message:'No courses found'})
+        }else{
+            return res.status(200).json({courses:courses})
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const getCourse=async(req,res)=>{
+    try{
+        const courseId=new mongoose.Types.ObjectId(req.body.courseId)
+        const course=await Course.findOne({
+            _id:courseId
+        }).populate({path:'teacher',select:'name picture about'})
+        if(course){
+            return res.status(200).json({courseDetails:course,message:'Success'})
+        }else{
+
+            return res.status(400).json('Course not found')
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const entroll=async(req,res)=>{
+    try{
+        const {courseId,userId}=req.body
+        const update=await Course.updateOne({_id:courseId},{$set:{entroll:userId}})
+        return res.status(200).json("success")
+    }catch(err){
+        return res.status(400).json('something went wrong')
+    }
+}
+
+// const isEntroll=async(req,res)=>{
+//     try{
+//         const {userId,courseId}=req.body
+//         const exist=await Course.findOne({_id:courseId})
+//     }catch(err){
+//         return res.status(400).json('Something went wrong')
+//     }
+// }
 
 const forgotPassword=async(req,res)=>{
     try{
@@ -243,4 +295,4 @@ const forgotPassword=async(req,res)=>{
     }
 }
 
-export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth}
+export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,entroll}

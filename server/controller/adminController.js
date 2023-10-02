@@ -202,12 +202,14 @@ const resendOtp=(req,res)=>{
 const getAllCategories=async(req,res)=>{
     try{
         const categoryList=await categories.find()
+        console.log(categoryList)
         if(categoryList.length===0){
             return res.status(400).json('No category found')
         }else{
             return res.status(200).json(categoryList)
         }
     }catch(err){
+        console.log(err)
         res.status(400).json('Something went wrong')
     }
 }

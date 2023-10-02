@@ -1,4 +1,4 @@
-import axios  from "../axios";
+import axios  from "../../src/axios/axiosUser.js";
 
 export const userLogin=(userDetails)=>{
     return axios('JwtToken').post('/login',{...userDetails})
@@ -31,4 +31,20 @@ export const googleAuth=(value)=>{
 
 export const userAuth=()=>{
     return axios('JwtToken').get('/auth')
+}
+
+export const allCourses=()=>{
+    return axios('JwtToken').get('/courses')
+}
+
+export const getCourse=(courseId)=>{
+    return axios('JwtToken').post('/course-details',{courseId})
+}
+
+export const isEntrolled=(userId,courseId)=>{
+    return axios('JwtToken').post('/isEntrolled',{userId,courseId})
+}
+
+export const handleCheckout=(values,courseId,userId)=>{
+    return axios('JwtToken').post('/checkOut',{...values,courseId,userId})
 }

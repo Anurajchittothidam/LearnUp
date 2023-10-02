@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import { sendEmail,verifyOTP } from '../helpers/sendMailTeacher.js';
 import jwt from 'jsonwebtoken';
 import axios from 'axios'
+import categories from '../models/categorySchema.js'
 import handleUpload from '../middlewares/imageUpload.js';
 import Multer from 'multer'
 import dotenv from 'dotenv'
@@ -260,7 +261,7 @@ const authTeacher=(req,res)=>{
                         const Teacher=await users.findById(decoded.id)
                         if(Teacher){
                             if(Teacher.block===true){
-                                res.status(400).json({status:false,message:"Your accound blocked"})
+                               return res.status(400).json({status:false,message:"Your accound blocked"})
                             }else{
                                  // if user exist passing the user id with the request
                                 res.status(200).json({status:true,teacher:Teacher,message:'authorised'})
@@ -277,6 +278,16 @@ const authTeacher=(req,res)=>{
             }catch(err){
                 return res.status(400).json('Something went wrong')
             }
+}
+
+const getCategory=async(req,res)=>{
+    try{
+        const category=await categories.find({block:false})
+        return res.status(200).json({category:category,message:'success'})
+    }catch(err){
+        console.log(err)
+        return res.status(400).json('Something went wrong')
+    }
 }
 
 
@@ -344,13 +355,7 @@ const uploadImage=async(req,res)=>{
     }
 }
 
-const addCourse=async(req,res)=>{
-    try{
-        
-    }catch(err){
-        return res.status(400).json("Something went wrong")
-    }
-}
 
 
-export {teacherLogin,authTeacher,teacherSignup,getTeacher,getAllUsers,uploadImage,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}
+
+export {teacherLogin,authTeacher,getCategory,teacherSignup,getTeacher,getAllUsers,uploadImage,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}

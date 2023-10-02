@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import {useSelector} from 'react-redux'
 import { getTeacher, imageUpload } from '../../services/teacherApi'
 import { toast } from 'react-toastify'
+import Sidebar from './teacherSideBar/Sidebar'
+import Navbar from './teacherNav/Navbar'
 
 function Profile() {
     const navigate=useNavigate()
@@ -40,6 +42,8 @@ function Profile() {
         })
     },[id])
 
+
+
     const handleSelectFile = (e) => setFile(e.target.files[0]);
   const handleUpload = async (e) => {
     try {
@@ -65,6 +69,13 @@ function Profile() {
   };
   return (
     <>
+     <div>
+   <Navbar/>
+   <div class="flex overflow-hidden bg-white pt-16">
+      <Sidebar/>
+      <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
+         <main>
+            <div class="pt-6 px-4">
 <div className="bg-gray-100">
  <div className="w-full text-white bg-main-color">
        
@@ -299,6 +310,11 @@ className="absolute inset-0 p-2 bg-gray-100 rounded-md opacity-0 transition-opac
             </div>
         </div>
     </div>
+</div>
+</div>
+</div>
+</main>
+</div>
 </div>
 </div>
 <link

@@ -7,21 +7,27 @@ import Dashboard from '../components/teacherComponents/Dashboard'
 import Profile from '../pages/teacherSide/Profile'
 import PrivateRoute from '../util/PrivetRoutes'
 import EditProfile from '../components/teacherComponents/EditProfile'
+import AddCoursePage from '../pages/teacherSide/AddCoursePage'
+import CoursesPage from '../pages/teacherSide/CoursesPage'
+import EditCoursePage from '../pages/teacherSide/EditCoursePage'
 
 function Teacher() {
   return (
     <Routes>
  
       <Route element={<PrivateRoute role={'teacher'} route={'/teachers/login'}/>}>
-      <Route path='/teachers/' element={<Dashboard/>}></Route>
-      <Route path='/teachers/profile' element={<Profile/>}></Route>
-      <Route path='/teachers/editProfile' element={<EditProfile/>}></Route>
+      <Route path='/' element={<Dashboard/>}></Route>
+      <Route path='/profile' element={<Profile/>}></Route>
+      <Route path='/editProfile' element={<EditProfile/>}></Route>
+      <Route path='/courses' element={<CoursesPage/>}></Route>
+      <Route path='/addCourse' element={<AddCoursePage/>}></Route>
+      <Route path='/editCourse/:id' element={<EditCoursePage/>}></Route>
       </Route>
 
-      <Route path='/teachers/login' element={<Login/>}></Route>
-      <Route path='/teachers/signup' element={<Signup data={'teacher'}/>}></Route>
-      <Route path='/teachers/otp' element={<Otp data={'teacher'}/>}></Route>
-      <Route path='/teachers/forgot' element={<Otp data={'teacher-forgot'}/>}></Route>
+      <Route path='/login' element={<Login/>}></Route>
+      <Route path='/signup' element={<Signup data={'teacher'}/>}></Route>
+      <Route path='/otp' element={<Otp data={'teacher'}/>}></Route>
+      <Route path='/forgot' element={<Otp data={'teacher-forgot'}/>}></Route>
     </Routes>
   )
 }

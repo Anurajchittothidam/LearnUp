@@ -1,9 +1,10 @@
 import axios from 'axios'
 
 const axiosInstance=(tokenName)=>{
+    const baseURL=import.meta.env.VITE_REACT_APP_BASE_URL
     const instance=axios.create({
-        baseURL:'http://localhost:8000/',
-        timeout:5000,
+        baseURL:baseURL,
+        timeout:100000,
         headers:{
             'Content-Type' : 'application/json'
         }
@@ -17,7 +18,8 @@ const axiosInstance=(tokenName)=>{
 
      // instance response interceptor
   instance.interceptors.response.use( response => response ,
-    error => Promise.reject(error.response.data)
+    error => Promise.reject(error) 
+    
     )
 
     return instance
