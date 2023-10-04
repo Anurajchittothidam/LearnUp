@@ -16,7 +16,7 @@ export const userAuth=createSlice({
             console.log('setUserLogin',action.payload)
             state.email=action.payload.email,
             state.name=action.payload.name,
-            state.id=action.payload_id,
+            state.id=action.payload._id?action.payload._id:action.payload.id,
             state.token=action.payload.token,
             state.image=action.payload.image,
             state.login=true

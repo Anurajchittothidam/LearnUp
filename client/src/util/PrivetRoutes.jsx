@@ -18,7 +18,7 @@ function PrivateRoute(props) {
             setIsLoading(true)
             userAuth().then((res)=>{
                 console.log(res.data)
-                dispatch(setUserLogin({status:true}))
+                dispatch(setUserLogin({...user,status:true}))
                 setAuth(true)
             }).catch((response)=>{
                 setAuth(false)

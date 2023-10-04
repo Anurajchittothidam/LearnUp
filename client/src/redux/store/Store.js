@@ -5,7 +5,7 @@ import userAuth from '../features/userAuth'
 import adminAuth from '../features/adminAuth'
 import teacherAuth from '../features/teacherAuth'
 import adminSidebar from '../features/adminSidebar'
-import courseDetails from '../features/editCourse'
+import courseDetails from '../features/CourseRedux'
 
 const rootReducer = combineReducers({
   user: userAuth,

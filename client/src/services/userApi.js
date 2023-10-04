@@ -33,8 +33,9 @@ export const userAuth=()=>{
     return axios('JwtToken').get('/auth')
 }
 
-export const allCourses=()=>{
-    return axios('JwtToken').get('/courses')
+export const allCourses=(filterCategory,price,search,sort,page)=>{
+    console.log('cat',page)
+    return axios('JwtToken').get(`/courses?category=${filterCategory}&isFree=${price}&search=${search}&sort=${sort}&page=${page}`)
 }
 
 export const getCourse=(courseId)=>{
@@ -47,4 +48,16 @@ export const isEntrolled=(userId,courseId)=>{
 
 export const handleCheckout=(values,courseId,userId)=>{
     return axios('JwtToken').post('/checkOut',{...values,courseId,userId})
+}
+
+export const getAllCategories=()=>{
+    return axios('JwtToken').get('/categories')
+}
+
+export const getEntrolled=()=>{
+    return axios('JwtToken').get('/getEntrolled')
+}
+
+export const AskQuestion=(courseId,question,index)=>{
+    return axios('JwtToken').patch(`/course/ask-question/${courseId}` , { question , index } )
 }

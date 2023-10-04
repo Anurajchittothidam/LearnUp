@@ -5,6 +5,8 @@ import {sendEmail, verifyOTP} from '../helpers/otpVerification.js'
 import axios from 'axios'
 import dotenv from 'dotenv'
 import Course from '../models/courseSchema.js'
+import categories from '../models/categorySchema.js'
+import Order from '../models/orderSchema.js'
 import mongoose from 'mongoose'
 dotenv.config()
 
@@ -191,15 +193,65 @@ const secret=process.env.SECRET_KEY
 
 const getAllCourse=async(req,res)=>{
     try{
-        const courses=await Course.find({block:false})
+        let category=req.query.category||'All'
+        const isFree=req.query.isFree ||''
+        const search=req.query.search ||""
+        const sort=req.query.sort||''
+        const page=req.query.page-1||0
+        const limit=3
+        let categoryIds;
+        const categoryOptions = await categories.find({block:false})
+        category==='All'?categoryIds=[...categoryOptions]:category=req.query.category.split(',')
+        {category!=='All'&&( categoryIds = categoryOptions
+            .filter((cat) => category.includes(cat.name))
+            .map((cat) => cat.id))}
+
+            const query={
+                block:false,
+                category:{$in:categoryIds},
+                name:{$regex:`^${search}`,$options:"i"}
+            }
+
+            let sortby={}
+            if(sort==='price-ase'){
+                sortby={price:1}
+            }else if(sort==='price-dec'){
+                sortby={price:-1}
+            }else if(sort==='order-ase'){
+                sortby={name:1}
+            }else if(sort==='order-dec'){
+                sortby={name:-1}
+            }else{
+                sortby={}
+            }
+
+            if (isFree === "true") {
+                query.isFree = true;
+              } else if (isFree === "false") {
+                query.isFree = false;
+              }
+              const totalCount = await Course.countDocuments(query);
+        const courses=await Course.find(query).sort(sortby).skip(page*limit).limit(limit)
         if(courses.length===0){
-            return res.status(200).json({status:false,message:'No courses found'})
+            return res.status(400).json({status:false,message:'No courses found'})
         }else{
-            return res.status(200).json({courses:courses})
+            return res.status(200).json({courses:courses,total:totalCount})
         }
     }catch(err){
         return res.status(400).json('Something went wrong')
     }
+
+    try {
+    // finding All courses and find the tutor details also by populating
+    const course = await Course.find().skip(req.paginatedResults.startIndex).limit(req.paginatedResults.limit).populate('tutor').lean()
+      
+    if(course) {
+      res.status(200).json({ status : true , course , pagination : req.paginatedResults})
+    }
+  } catch (error) {
+    res.status(500).json({ status : false , message : " Internal Server Error "}) ;
+  }
+
 }
 
 const getCourse=async(req,res)=>{
@@ -227,6 +279,20 @@ const entroll=async(req,res)=>{
         return res.status(200).json("success")
     }catch(err){
         return res.status(400).json('something went wrong')
+    }
+}
+
+const getEntrolled=async(req,res)=>{
+    try{
+        const userId=req.userId
+        const courses=await Order.find({user:userId}).populate('teacher').populate('course')
+        if(courses){
+            return res.status(200).json({courses:courses,message:'Success'})
+        }else{
+            return res.status(400).json('courses not found')
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
     }
 }
 
@@ -295,4 +361,4 @@ const forgotPassword=async(req,res)=>{
     }
 }
 
-export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,entroll}
+export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,entroll,getEntrolled}

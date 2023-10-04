@@ -8,6 +8,10 @@ import Category from '../components/userComponents/Categories/Category'
 import CourseDetails from '../components/userComponents/CourseDetails'
 import PrivateRoute from '../util/PrivetRoutes'
 import CheckOut from '../components/userComponents/CheckOut'
+import OrderSuccess from '../components/userComponents/OrderSuccess'
+import OrderFailed from '../components/userComponents/OrderFailed'
+import EntrolledCourses from '../components/userComponents/EntrolledCourses'
+import Learn from '../components/userComponents/Learn/Learn'
 
 function UserComponents() {
   return (
@@ -23,6 +27,10 @@ function UserComponents() {
 
         <Route element={<PrivateRoute route={'/login'} role={'user'}/>}>
         <Route path='/course-payment/:id' element={<CheckOut/>}></Route>
+        <Route path='/order-success' element={<OrderSuccess/>}></Route>
+        <Route path='/order-failed' element={<OrderFailed/>}></Route>
+        <Route path='/my-entrollments' element={<EntrolledCourses/>}></Route>
+        <Route path='/course/learn/:courseId' element={<Learn/>}></Route>
         </Route>
     </Routes>
 

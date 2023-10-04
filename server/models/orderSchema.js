@@ -7,17 +7,17 @@ const orderSchema=new mongoose.Schema({
     },
     user:{
         type:mongoose.Types.ObjectId,
-        ref:'user',
+        ref:'users',
         required:true,
     },
     teacher:{
         type:mongoose.Types.ObjectId,
-        ref:'user',
+        ref:'users',
         required:true
     },
     course:{
         type:mongoose.Types.ObjectId,
-        ref:'course',
+        ref:'Course',
         required:true,
     },
     address:{

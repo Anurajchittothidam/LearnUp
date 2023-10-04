@@ -13,13 +13,11 @@ function CheckOut(){
     const [courseDetails , setCourseDetails] = useState([]);
     const [loading , setLoading] = useState(false) ; 
     // const [btnloading , setBtnLoading] = useState(false);
-    const userId=useSelector((state)=>state.user)
-    console.log(userId)
-  
+    const userId=useSelector((state)=>state.user.id)
   const navigate = useNavigate();
   
     const validate = Yup.object({
-      address : Yup.string().max(30 , "Must be 30 charecter or less")
+      address : Yup.string().max(50 , "Must be 50 charecter or less")
       .required('Address is Required')  ,
       pincode : Yup.number()
       .min(6 , " Must be 6 charecters") 

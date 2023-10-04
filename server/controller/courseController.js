@@ -178,6 +178,25 @@ const getCourse=async(req,res)=>{
     }
 }
 
+const AskQuestion=async(req,res)=>{
+    try{
+        const courseId=req.params.id
+        const question=req.body.question
+        const courseIndex=req.body.index
+        const course=await Course.findOne({_id:courseId})
+        if(course){
+            course.course[courseIndex].questionsAndAnswers.push({question:question})
+
+            await course.save()
+            return res.status(200).json({status:true,message:'Question added successfully'})
+        }else{
+            return res.staus(400).json({status:false,message:'Course not found'})
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
+
 const getAllCourse=async(req,res)=>{
     try{
         const id=new mongoose.Types.ObjectId(req.body.id)
@@ -222,4 +241,4 @@ const getAllCourse=async(req,res)=>{
     }
 }
 
-export {addCourse,editCourse,getAllCourse,getCourse,listUnListCourse}
+export {addCourse,editCourse,getAllCourse,getCourse,listUnListCourse,AskQuestion}
