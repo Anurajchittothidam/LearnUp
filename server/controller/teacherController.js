@@ -8,6 +8,7 @@ import categories from '../models/categorySchema.js'
 import handleUpload from '../middlewares/imageUpload.js';
 import Multer from 'multer'
 import dotenv from 'dotenv'
+import Course from '../models/courseSchema.js'
 import mongoose from 'mongoose';
 dotenv.config()
 
@@ -355,7 +356,23 @@ const uploadImage=async(req,res)=>{
     }
 }
 
+const replyQuestion=async(req,res)=>{
+    const courseId=req.body.courseId
+    const index=req.body.chapterIndex
+    const questionIndex=req.body.questionIndex
+    const answer=req.body.answer
+    const course=await Course.findOne({_id:courseId})
+    if(course){
+        course.course[index].questionsAndAnswers[questionIndex].answer=answer
+        await course.save()
+        console.log(course.course[index].questionsAndAnswers[questionIndex])
+        return res.status(200).json('Reply added successfully')
+    }else{
+        return res.status(400).json('Something went wrong')
+    }
+}
 
 
 
-export {teacherLogin,authTeacher,getCategory,teacherSignup,getTeacher,getAllUsers,uploadImage,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}
+
+export {teacherLogin,authTeacher,getCategory,teacherSignup,getTeacher,getAllUsers,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}

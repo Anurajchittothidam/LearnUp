@@ -183,11 +183,13 @@ const AskQuestion=async(req,res)=>{
         const courseId=req.params.id
         const question=req.body.question
         const courseIndex=req.body.index
+        console.log(question,courseIndex)
         const course=await Course.findOne({_id:courseId})
         if(course){
             course.course[courseIndex].questionsAndAnswers.push({question:question})
 
             await course.save()
+            console.log(course.course[courseIndex].questionsAndAnswers)
             return res.status(200).json({status:true,message:'Question added successfully'})
         }else{
             return res.staus(400).json({status:false,message:'Course not found'})
@@ -199,7 +201,7 @@ const AskQuestion=async(req,res)=>{
 
 const getAllCourse=async(req,res)=>{
     try{
-        const id=new mongoose.Types.ObjectId(req.body.id)
+        const id=new mongoose.Types.ObjectId(req.teacherId)
         const courses=await Course.aggregate([
             {
                 $match:{
@@ -229,7 +231,6 @@ const getAllCourse=async(req,res)=>{
                 }
             }
         ])
-
         if(courses.length===0){
             return res.status(200).json({status:false,message:'No Course Found'})
         }else{

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const verifyTeacher=(req,res)=>{
+const verifyTeacher=(req,res,next)=>{
     try{
         const secret=process.env.SECRET_KEY
         const authHeader=req.headers.authorization

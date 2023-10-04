@@ -52,15 +52,15 @@ function QuestionCard({ index, courseDetails }) {
        <blockquote  className="rounded-lg bg-gray-100 p-4 mt-5">
     {courseDetails.course[index].questionsAndAnswers &&
       courseDetails.course[index].questionsAndAnswers.map((qa, qaIndex) => (
-         qa.answer && (
         <div>
           <p className="text-lg font-semibold text-gray-700">
-            Qn{qaIndex + 1}.{ qa.question}
+            Qn{qaIndex + 1}.{ qa?.question}
           </p>
+        {  qa.answer && (
           <p className="text-gray-950 mx-2 mb-4"> 
             
-            {qa.answer}</p>
-          </div> )
+            {qa?.answer}</p>)}
+          </div> 
           ))}
           </blockquote>
        </div>

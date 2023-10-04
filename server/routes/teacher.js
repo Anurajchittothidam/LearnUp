@@ -1,6 +1,6 @@
 import express from 'express'
 const router=express.Router()
-import { forgotPassword, googleAuth, resendOtp, teacherLogin, teacherSignup, uploadImage, getCategory, verifyOtp,authTeacher,getTeacher, editProfile } from '../controller/teacherController.js'
+import { forgotPassword, googleAuth, resendOtp, teacherLogin, teacherSignup, uploadImage, getCategory,replyQuestion, verifyOtp,authTeacher,getTeacher, editProfile } from '../controller/teacherController.js'
 import verifyTeacher from '../middlewares/authTeacher.js'
 import {addCourse, editCourse, getAllCourse, getCourse, listUnListCourse} from '../controller/courseController.js'
 import {upload} from '../middlewares/imageUpload.js'
@@ -23,20 +23,22 @@ router.post('/resend',resendOtp)
 
 router.post('/auth/google',googleAuth)
 
-router.put('/uploadImage',upload.single("my_file"),uploadImage)
+router.put('/uploadImage',upload.single("my_file"),verifyTeacher,uploadImage)
 
-router.put('/editProfile',editProfile)
+router.put('/editProfile',verifyTeacher,editProfile)
 
-router.post('/addCourse',upload.single('image'),addCourse)
+router.post('/addCourse',upload.single('image'),verifyTeacher,addCourse)
 
-router.post('/editCourse',upload.single('image'),editCourse)
+router.post('/editCourse',upload.single('image'),verifyTeacher,editCourse)
 
-router.post("/getList",getAllCourse)
+router.get("/getList",verifyTeacher,getAllCourse)
 
-router.put('/listUnlist',listUnListCourse)
+router.put('/listUnlist',verifyTeacher,listUnListCourse)
 
-router.post('/getCourse',getCourse)
+router.post('/getCourse',verifyTeacher,getCourse)
 
-router.get('/getCategory',getCategory)
+router.get('/getCategory',verifyTeacher,getCategory)
+
+router.patch('/reply',verifyTeacher,replyQuestion)
 
 export default router

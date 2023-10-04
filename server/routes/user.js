@@ -36,7 +36,7 @@ router.get('/cancel-payment/:orderId',cancelPayment)
 
 router.get('/getEntrolled',verifyUser,getEntrolled)
 
-router.patch('/course/ask-question/:id',AskQuestion)
+router.patch('/course/ask-question/:id',verifyUser,AskQuestion)
 
 
 

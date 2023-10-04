@@ -169,7 +169,7 @@ function Learn() {
 
                 <h1 className="ml-3 text-md ">
                   {" "}
-                  {courseDetails && courseDetails.courseInfo.name}{" "}
+                  {courseDetails && courseDetails?.courseInfo?.name}{" "}
                 </h1>
               </div>
 
@@ -182,7 +182,7 @@ function Learn() {
                   <div
                     onClick={() => {
                       getYoutubeVideoId(
-                        courseDetails.course[0].lessons[0].videoUrl
+                        courseDetails?.course[0]?.lessons[0]?.videoUrl
                       );
                     }}
                     className="cursor-pointer relative flex justify-center items-center mt-9 md:mt-14 "

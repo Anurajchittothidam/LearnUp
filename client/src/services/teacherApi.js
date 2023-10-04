@@ -52,8 +52,8 @@ export const addCourse=(values,course,image,teacherId)=>{
      }})
 }
 
-export const courseList=(id)=>{
-    return axios('teacherJwtToken').post('/teacher/getList',{id})
+export const courseList=()=>{
+    return axios('teacherJwtToken').get('/teacher/getList')
 }
 
 export const listUnlist=(teacherId,courseId,action)=>{
@@ -74,6 +74,11 @@ export const editCourse=(values,course,image,teacherId,courseId)=>{
             'Content-Type' : 'multipart/form-data',
          }
     })
+}
+
+export const replyQuestion=(courseId,chapterIndex,answer,questionIndex)=>{
+    console.log(questionIndex)
+    return axios('teacherJwtToken').patch('/teacher/reply',{courseId,chapterIndex,answer,questionIndex})
 }
 
 
