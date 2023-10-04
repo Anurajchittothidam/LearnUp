@@ -272,26 +272,61 @@ const getCourse=async(req,res)=>{
     }
 }
 
-const entroll=async(req,res)=>{
-    try{
-        const {courseId,userId}=req.body
-        const update=await Course.updateOne({_id:courseId},{$set:{entroll:userId}})
-        return res.status(200).json("success")
-    }catch(err){
-        return res.status(400).json('something went wrong')
-    }
-}
+
 
 const getEntrolled=async(req,res)=>{
     try{
-        const userId=req.userId
-        const courses=await Order.find({user:userId}).populate('teacher').populate('course')
+        const userId=new mongoose.Types.ObjectId(req.userId)
+        const search=req.query.search||""
+        // const query={
+        //     user:userId,
+        //     name:{$regex:`^${search}`,$options:"i"}
+        // }
+        const courses = await Order.aggregate([
+            {
+                $match: {
+                    user: userId
+                }
+            },
+            {
+                $lookup:{
+                    from:'users',
+                    localField:'teacher',
+                    foreignField:'_id',
+                    as:'teacherInfo'
+                }
+            },
+            {
+                $lookup:{
+                    from:'courses',
+                    localField:'course',
+                    foreignField:'_id',
+                    as:'courseInfo'
+                }
+            },
+            {
+                $match:{
+                    $or:[
+                        {
+                            'courseInfo.name':{
+                                $regex:`^${search}`,$options:'i'
+                            }
+                        }
+                    ]
+                }
+            },
+        ]);
+        
+
+        // const courses=await Order.find(query).populate('teacher').populate('course')
+        console.log(courses)
         if(courses){
             return res.status(200).json({courses:courses,message:'Success'})
         }else{
             return res.status(400).json('courses not found')
         }
     }catch(err){
+        console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }
@@ -361,4 +396,4 @@ const forgotPassword=async(req,res)=>{
     }
 }
 
-export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,entroll,getEntrolled}
+export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,getEntrolled}

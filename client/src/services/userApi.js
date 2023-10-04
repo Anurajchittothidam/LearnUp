@@ -54,8 +54,8 @@ export const getAllCategories=()=>{
     return axios('JwtToken').get('/categories')
 }
 
-export const getEntrolled=()=>{
-    return axios('JwtToken').get('/getEntrolled')
+export const getEntrolled=(search)=>{
+    return axios('JwtToken').get(`/getEntrolled?search=${search}`)
 }
 
 export const AskQuestion=(courseId,question,index)=>{
