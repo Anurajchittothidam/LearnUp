@@ -12,6 +12,8 @@ import OrderSuccess from '../components/userComponents/OrderSuccess'
 import OrderFailed from '../components/userComponents/OrderFailed'
 import EntrolledCourses from '../components/userComponents/EntrolledCourses'
 import Learn from '../components/userComponents/Learn/Learn'
+import Profile from '../components/userComponents/Profile'
+import EditProfile from '../components/userComponents/EditProfile'
 
 function UserComponents() {
   return (
@@ -31,6 +33,8 @@ function UserComponents() {
         <Route path='/order-failed' element={<OrderFailed/>}></Route>
         <Route path='/my-entrollments' element={<EntrolledCourses/>}></Route>
         <Route path='/course/learn/:courseId' element={<Learn/>}></Route>
+        <Route path='/profile' element={<Profile/>}></Route>
+        <Route path='/editProfile' element={<EditProfile/>}></Route>
         </Route>
     </Routes>
 

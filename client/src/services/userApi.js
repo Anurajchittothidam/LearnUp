@@ -33,17 +33,16 @@ export const userAuth=()=>{
     return axios('JwtToken').get('/auth')
 }
 
-export const allCourses=(filterCategory,price,search,sort,page)=>{
-    console.log('cat',page)
-    return axios('JwtToken').get(`/courses?category=${filterCategory}&isFree=${price}&search=${search}&sort=${sort}&page=${page}`)
+export const allCourses=(filterCategory,price,search,sort,page,limit)=>{
+    return axios('JwtToken').get(`/courses?category=${filterCategory}&isFree=${price}&search=${search}&sort=${sort}&limit=${limit}&page=${page}`)
 }
 
 export const getCourse=(courseId)=>{
     return axios('JwtToken').post('/course-details',{courseId})
 }
 
-export const isEntrolled=(userId,courseId)=>{
-    return axios('JwtToken').post('/isEntrolled',{userId,courseId})
+export const isEntrolled=(courseId)=>{
+    return axios('JwtToken').get(`/isEntrolled/${courseId}`)
 }
 
 export const handleCheckout=(values,courseId,userId)=>{
@@ -60,4 +59,19 @@ export const getEntrolled=(search)=>{
 
 export const AskQuestion=(courseId,question,index)=>{
     return axios('JwtToken').patch(`/course/ask-question/${courseId}` , { question , index } )
+}
+
+export const imageUpload=(data)=>{
+    return axios('JwtToken').put('/uploadImage',data,{headers: {
+        'Content-Type': 'multipart/form-data',
+      }})
+}
+
+export const userEditProfile=(data)=>{
+    console.log(data)
+    return axios('JwtToken').put('/editProfile',{...data})
+}
+
+export const getUser=()=>{
+    return axios('JwtToken').get('/user')
 }

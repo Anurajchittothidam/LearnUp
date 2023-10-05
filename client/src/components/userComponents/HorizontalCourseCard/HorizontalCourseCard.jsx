@@ -20,10 +20,13 @@ function HorizontalCourseCard({ courseDetails }) {
             }} className="flex justify-center mt-4 sm:mx-10 m-3">
                 <div className="flex p-4 w-full max-w-screen-lg hover:bg-violet-50 flex-col items-center bg-white border border-gray-200 rounded-lg shadow-md md:flex-row  dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
                     <img className="rounded-md mt-4 sm:mt-0 w-80 h-40 md:w-56 md:h-32 object-cover" src={courseDetails?.courseInfo[0]?.image}  />
-                    <div className="flex flex-col ml-0 sm:ml-3 justify-between mt-2 sm:0 p-4 leading-normal">
+                    <div className="basis-3/4 flex flex-col ml-0 sm:ml-3 justify-between mt-2 sm:0 p-4 leading-normal">
                         <h5 className="mb-2 text-xl  font-bold tracking-tight text-gray-900 dark:text-white">{courseDetails?.courseInfo[0]?.name}</h5>
                         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{courseDetails?.courseInfo[0]?.course?.length} lessons</p>
                     </div>
+                    {courseDetails?.courseInfo[0]?.isFree?
+                    <div className='btn bg-green-200 rounded px-2'><span className=''>Free</span></div>:
+                    <div className='btn bg-red-200 rounded px-2'><span>Paid</span></div>}
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@ import Course from '../models/courseSchema.js'
 import categories from '../models/categorySchema.js'
 import Order from '../models/orderSchema.js'
 import mongoose from 'mongoose'
+import handleUpload from '../middlewares/imageUpload.js'
 dotenv.config()
 
 let userDetails;
@@ -198,7 +199,7 @@ const getAllCourse=async(req,res)=>{
         const search=req.query.search ||""
         const sort=req.query.sort||''
         const page=req.query.page-1||0
-        const limit=3
+        const limit=req.query.limit||3
         let categoryIds;
         const categoryOptions = await categories.find({block:false})
         category==='All'?categoryIds=[...categoryOptions]:category=req.query.category.split(',')
@@ -272,7 +273,64 @@ const getCourse=async(req,res)=>{
     }
 }
 
+const imageUpload=async(req,res)=>{
+    try{
+        const b64 = Buffer.from(req.file.buffer).toString("base64");
+        let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        const cldRes = await handleUpload(dataURI);
+        const id=req.userId
+        const url=cldRes.url
+        const imageUpdated=await users.updateOne({_id:id},{$set:{picture:url}})
+        if(imageUpdated){
+            res.status(200).json({image:cldRes})
+        }else{
+            res.status(400).json('image not uploaded in the database')
+        }
+    }catch(err){
+        console.log(err)
+        return res.status(400).json('Something went wrong')
+    }
+}
 
+const editProfile=async(req,res)=>{
+    try{
+        const {id,email,name,phoneNumber,about,place}=req.body
+        console.log(id)
+        if(!email || !name || !phoneNumber || !about || !place){
+            return res.status(400).json('Enter the complete fields')
+        }else{
+            const emailExist=await users.findOne({email,role:'users'})
+            if(!emailExist){
+                const updated=await users.updateOne({_id:id},{$set:{email,name,phoneNumber,about,place}})
+                return res.status(200).json(updated)
+            }else if(emailExist._id.toString()===id){
+                console.log('dslfj')
+                const updated=await users.updateOne({_id:id},{$set:{email,name,phoneNumber,about,place}})
+                return res.status(200).json(updated)
+            }else{
+                return res.status(400).json('This email alredy exist')
+            }
+        }
+    }catch(err){
+        return res.status(500).json('Something went wrong')
+    }
+}
+
+const getUser=async(req,res)=>{
+    try{
+        const userId=req.userId
+        const user=await users.findOne({_id:userId})
+        console.log(user)
+        if(user){
+            return res.status(200).json(user)
+        }else{
+            return res.status(400).json('User not found')
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+   
+}
 
 const getEntrolled=async(req,res)=>{
     try{
@@ -396,4 +454,4 @@ const forgotPassword=async(req,res)=>{
     }
 }
 
-export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,getEntrolled}
+export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,getEntrolled,imageUpload,editProfile,getUser}

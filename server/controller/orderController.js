@@ -137,4 +137,19 @@ const cancelPayment=(req,res)=>{
     }
 }
 
-export { CheckOut ,verifyPayment,cancelPayment};
+const isEntrolled=async(req,res)=>{
+  try{
+    const {courseId}=req.params
+    const userId=req.userId
+    const exist=Order.findOne({course:courseId,user:userId})
+    if(exist){
+      return res.status(200).json({entrolled:true,message:'Alredy entrolled'})
+    }else{
+      return res.status(400).json({entrolled:false,message:'Not entrolled yet'})
+    }
+  }catch(err){
+    return res.status(400).json('something went wrong')
+  }
+}
+
+export { CheckOut ,verifyPayment,cancelPayment,isEntrolled};

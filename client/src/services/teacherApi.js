@@ -81,4 +81,8 @@ export const replyQuestion=(courseId,chapterIndex,answer,questionIndex)=>{
     return axios('teacherJwtToken').patch('/teacher/reply',{courseId,chapterIndex,answer,questionIndex})
 }
 
+export const getAllStudents=(courseId)=>{
+    return axios('teacherJwtToken').get(`/teacher/getAllStudents/${courseId}`)
+}
+
 

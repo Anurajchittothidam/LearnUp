@@ -9,6 +9,7 @@ import handleUpload from '../middlewares/imageUpload.js';
 import Multer from 'multer'
 import dotenv from 'dotenv'
 import Course from '../models/courseSchema.js'
+import Order from '../models/orderSchema.js'
 import mongoose from 'mongoose';
 dotenv.config()
 
@@ -313,14 +314,7 @@ const resendOtp=(req,res)=>{
     }
 }
 
-const getAllUsers=async (req,res)=>{
-    try{
-        const userList=await users.find()
-        return res.status(200).json(userList)
-    }catch(err){
-        res.status(500).json('Something went wrong')
-    }
-}
+
 
 const getTeacher=async(req,res)=>{
     try{
@@ -357,17 +351,36 @@ const uploadImage=async(req,res)=>{
 }
 
 const replyQuestion=async(req,res)=>{
-    const courseId=req.body.courseId
-    const index=req.body.chapterIndex
-    const questionIndex=req.body.questionIndex
-    const answer=req.body.answer
-    const course=await Course.findOne({_id:courseId})
-    if(course){
-        course.course[index].questionsAndAnswers[questionIndex].answer=answer
-        await course.save()
-        console.log(course.course[index].questionsAndAnswers[questionIndex])
-        return res.status(200).json('Reply added successfully')
-    }else{
+    try{
+        const courseId=req.body.courseId
+        const index=req.body.chapterIndex
+        const questionIndex=req.body.questionIndex
+        const answer=req.body.answer
+        const course=await Course.findOne({_id:courseId})
+        if(course){
+            course.course[index].questionsAndAnswers[questionIndex].answer=answer
+            await course.save()
+            console.log(course.course[index].questionsAndAnswers[questionIndex])
+            return res.status(200).json('Reply added successfully')
+        }else{
+            return res.status(400).json('Reply not added.')
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const getAllStudents=async(req,res)=>{
+    try{
+        const {courseId}=req.params
+        const users=await Order.find({course:courseId}).populate('user')
+        console.log(users)
+        if(users){
+            return res.status(200).json({users:users,message:'success'})
+        }else{
+            return res.status(400).json('No user Found')
+        }
+    }catch(err){
         return res.status(400).json('Something went wrong')
     }
 }
@@ -375,4 +388,4 @@ const replyQuestion=async(req,res)=>{
 
 
 
-export {teacherLogin,authTeacher,getCategory,teacherSignup,getTeacher,getAllUsers,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}
+export {teacherLogin,authTeacher,getCategory,teacherSignup,getTeacher,getAllStudents,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}

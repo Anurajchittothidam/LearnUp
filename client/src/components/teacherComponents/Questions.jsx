@@ -15,7 +15,7 @@ function Questions() {
         })
     },[])
   return (
-    <div>
+    <>
         <Navbar />
         <div class="flex overflow-hidden bg-white pt-16">
           <Sidebar />
@@ -23,16 +23,22 @@ function Questions() {
             id="main-content"
             class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64"
           >
-            {isLoading ? (
+            
+              <main>
+                <div class="pt-6 px-4">
+                <div className="bg-gray-100">
+                    <div className="w-full text-white bg-main-color">
+                      <div className="container mx-auto my-5 p-5">
+                {isLoading ? (
               <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
                 <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0">
                   <i className="fas fa-circle-notch fa-spin fa-5x"></i>
                 </span>
               </div>
             ) : (
-              <main>
-                <div class="pt-6 px-4">
-                <div className="h-64 flex-initial mt-20 md:px-4 md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 space-y-4 md:space-y-0">
+              <>
+
+                 <div className="flex-initial mt-10 md:px-4 md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 space-y-4 md:space-y-0">
                   {courses.length === 0 ? (
                     <>
                       <div className=" bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg">
@@ -68,18 +74,23 @@ function Questions() {
                         <div className="my-4">
                           <div className="flex space-x-1 items-center">
                             <button onClick={()=>navigate(`/teachers/questions/reply/${result?._id}`)} className="mt-4 text-xl w-full text-white bg-indigo-600 py-2 rounded-xl shadow-lg">View Questions</button>
+                            <button onClick={()=>navigate(`/teachers/entrolled/${result?._id}`)} className="mt-4 text-xl w-full text-white bg-indigo-600 py-2 rounded-xl shadow-lg">Students</button>
                           </div>
                         </div>
                       </div>
                     ))
                   )}
-                </div>
-                </div>
-                </main>
+                  </div>
+                  </>
             )}
             </div>
+            </div>
+            </div>
+                </div>
+                </main>
+            </div>
         </div>
-    </div>
+        </>
   )
 }
 

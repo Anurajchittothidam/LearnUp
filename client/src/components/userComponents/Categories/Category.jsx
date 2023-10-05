@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { getAllCategories } from "../../../services/userApi";
 import { allCourses } from "../../../services/userApi";
@@ -19,11 +19,13 @@ function Category() {
   const [filterCategory, setfilterCategory] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
+  const [limit,setLimit]=useState(3)
   const [price, setPrice] = useState("All");
   const [search, setSearch] = useState("");
+
   useEffect(() => {
     // setIsLoading(true)
-    allCourses(filterCategory.toString(), price, search, sort, page)
+    allCourses(filterCategory.toString(), price, search, sort, page,limit)
       .then((res) => {
         if (res.data.block === "true") {
         } else {
@@ -48,6 +50,7 @@ function Category() {
   }, [sort, filterCategory, page, search, price]);
 
   const filterChange = (e) => {
+    
     if (e.target.checked) {
       setfilterCategory((prev) => [...prev, e.target.value]);
     } else {
@@ -117,12 +120,12 @@ function Category() {
                 {categories.map((category, index) => (
                   <div className="flex items-center ps-5 p-3" key={index}>
                     <input
-                      id={`checked-checkbox-${index}`}
-                      type="checkbox"
-                      onChange={(e) => filterChange(e)}
-                      value={category?.name}
-                      className="w-5 h-5 border-gray-300 focus:ring-blue-700 focus:ring-offset-2 focus:ring checked:bg-red-400 rounded"
-                    />
+                id={`checked-checkbox-${index}`}
+                type="checkbox"
+                onChange={(e) => filterChange(e)}
+                value={category?.name}
+                className="w-5 h-5 border-gray-300 focus:ring-blue-700 focus:ring-offset-2 focus:ring checked:bg-red-400 rounded"
+              />
                     <label
                       htmlFor={`checked-checkbox-${index}`}
                       className="ml-5 text-xl font-medium text-gray-900 dark:text-gray-300"
@@ -326,7 +329,9 @@ function Category() {
                             </span>
                             <p>{result.language}</p>
                           </div>
-                          <button className="mt-4 text-xl w-full text-white bg-indigo-600 py-2 rounded-xl shadow-lg">
+                          <button  onClick={() =>
+                              navigate(`/course-details/${result._id}`)
+                            } className="mt-4 text-xl w-full text-white bg-indigo-600 py-2 rounded-xl shadow-lg">
                             {result.price === 0
                               ? "Entroll Now "
                               : "Purchase Now"}

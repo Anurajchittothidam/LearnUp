@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react'
-import {useNavigate } from 'react-router-dom'
+import {Link, useNavigate } from 'react-router-dom'
 import {allCourses, userAuth} from '../../../services/userApi'
 import Navbar from '../Navbar'
 
@@ -7,9 +7,15 @@ function Landing() {
     const [course,setCourses]=useState([])
     const [isLoading,setIsLoading]=useState(false)
     const navigate=useNavigate()
+    const [sort, setSort] = useState("");
+    const [filterCategory, setfilterCategory] = useState([]);
+    const [page, setPage] = useState(1);
+    const [limit,setLimit]=useState(4)
+    const [price, setPrice] = useState("All");
+    const [search, setSearch] = useState("");
     useEffect(()=>{
         setIsLoading(true)
-        allCourses().then((res)=>{
+        allCourses(filterCategory.toString(), price, search, sort, page,limit).then((res)=>{
           if(res.data.block==='true'){
 
           }else{
@@ -20,7 +26,7 @@ function Landing() {
         }).finally(()=>{
             setIsLoading(false)
         })
-    },[])
+    },[filterCategory,price,search,sort,page])
 
     function logOut(){
         localStorage.removeItem('JwtToken')
@@ -29,7 +35,7 @@ function Landing() {
 
   return (
     <>
-<Navbar data={'auth'}/>
+<Navbar/>
 
 <main class="flex flex-col items-center justify-center mt-32">
     
@@ -126,23 +132,42 @@ function Landing() {
 
         <div class="holder mx-auto w-10/12 grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 flex justify-center items-center">
 
+<Link to={{
+          pathname: '/category',
+          
+        }}>
 <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
   <img class="w-64" src="/images/web-development.png" alt="" />
  <h3 className='text-center'>Web Development</h3>
 </div>
+</Link>
+
+<Link to={{
+          pathname: '/category',
+        }}>
 <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
   <img class="w-64" src="/images/website-design.png" alt="" />
  <h3 className='text-center'>Web Designing</h3>
 </div>
+</Link>
+
+<Link to={{
+          pathname: '/category',
+        }}>
 <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
   <img class="w-64" src="/images/video-editing.png" alt="" />
  <h3 className='text-center'>Video Editing</h3>
 </div>
+</Link>
+
+<Link to={{
+          pathname: '/category',
+        }}>
 <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
   <img class="w-64" src="/images/digital-marketing.png" alt="" />
  <h3 className='text-center'>Digital Marketing</h3>
 </div>
-
+</Link>
 
 
 </div>

@@ -10,16 +10,13 @@ function BuyNowCard({courseDetails}) {
   const user = useSelector((state) => state.user);
   const [enrolled , setIsEnrolled] = useState(false)
     useEffect(() => {
-        console.log('user->' , user);
-      if(user.firstName ) {
         isEntrolled(courseDetails._id).then((response) => {
           console.log("isCourseEnrolled" , response.data
           );
-          if(response.data.enrolled) {
+          if(response?.data?.entrolled===true) {
             setIsEnrolled(true)
           }
         })
-      }
     })
 
 
@@ -35,11 +32,11 @@ function BuyNowCard({courseDetails}) {
                 <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">life long validity</p>
                 <div className='button'>
                     {enrolled ?
-                        <Link to={`/my-enrollments`}>
+                        <Link to={`/course/learn/${courseDetails._id}`}>
                             {/* <Button width={true}>
                                 
                             </Button> */}
-                            <a class="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
+                            <a  class="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
                             Continue Learning
                 </a>
                         </Link>

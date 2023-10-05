@@ -18,7 +18,7 @@ export const userAuth=createSlice({
             state.name=action.payload.name,
             state.id=action.payload._id?action.payload._id:action.payload.id,
             state.token=action.payload.token,
-            state.image=action.payload.image,
+            state.picture=action.payload.picture,
             state.login=true
         },
         setUserSignOut:(state,action)=>{

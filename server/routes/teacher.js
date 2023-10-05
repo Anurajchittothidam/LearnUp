@@ -1,6 +1,6 @@
 import express from 'express'
 const router=express.Router()
-import { forgotPassword, googleAuth, resendOtp, teacherLogin, teacherSignup, uploadImage, getCategory,replyQuestion, verifyOtp,authTeacher,getTeacher, editProfile } from '../controller/teacherController.js'
+import { forgotPassword, googleAuth, resendOtp, teacherLogin,getAllStudents, teacherSignup, uploadImage, getCategory,replyQuestion, verifyOtp,authTeacher,getTeacher, editProfile } from '../controller/teacherController.js'
 import verifyTeacher from '../middlewares/authTeacher.js'
 import {addCourse, editCourse, getAllCourse, getCourse, listUnListCourse} from '../controller/courseController.js'
 import {upload} from '../middlewares/imageUpload.js'
@@ -40,5 +40,7 @@ router.post('/getCourse',verifyTeacher,getCourse)
 router.get('/getCategory',verifyTeacher,getCategory)
 
 router.patch('/reply',verifyTeacher,replyQuestion)
+
+router.get('/getAllStudents/:courseId',verifyTeacher,getAllStudents)
 
 export default router

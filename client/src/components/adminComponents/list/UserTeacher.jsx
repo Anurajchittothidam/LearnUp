@@ -145,7 +145,6 @@ const UserTeacher=(props)=> {
                          
                           {value.block===false ? <button onClick={()=>blockUser({name:value?.role,id:value?._id})} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded mx-2">Block</button> : 
                              <button onClick={()=>blockUnblock({name:value?.role,id:value?._id})} className="bg-green-500 hover:bg-gree-700 text-white font-bold py-1 px-2 border border-green-500 rounded mx-2">UnBlock</button>} 
-                            
                         </td>
                       </tr>
                     ))}
