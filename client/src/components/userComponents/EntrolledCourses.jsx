@@ -12,14 +12,15 @@ function EntrolledCourses() {
 
     useEffect(()=>{
         getEntrolled(search).then((res)=>{
+            // setEnrolledCourse([])
             if(res.data.courses){
-                console.log(res.data.courses)
                 setEnrolledCourse(res.data.courses)
             }else{
                 toast.error('course not found')
             }
         })
     },[search])
+    console.log('Cart',enrolledCourse)
   return (
     <>
     <section>
@@ -80,10 +81,10 @@ function EntrolledCourses() {
           {enrolledCourse.length ? (
             <>
               {enrolledCourse &&
-                enrolledCourse.map((courseDetails) => {
+                enrolledCourse.map((courseDetails,index) => {
                   return (
                     <HorizontalCourseCard
-                      key={courseDetails._id}
+                      key={index}
                       courseDetails={courseDetails}
                     />
                   );

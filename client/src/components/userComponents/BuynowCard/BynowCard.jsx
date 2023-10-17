@@ -2,13 +2,15 @@ import React , {useEffect , useState} from 'react'
 import { Link } from 'react-router-dom'
 // import Button from '../Button/Button'
 import { useSelector } from 'react-redux'
-import { isEntrolled } from '../../../services/userApi';
+import { isEntrolled,addToCart, isAdded } from '../../../services/userApi';
+import { toast,ToastContainer } from 'react-toastify';
 // import { isCourseEnrolled } from '../../../services/userApi';
 
 
 function BuyNowCard({courseDetails}) {
   const user = useSelector((state) => state.user);
   const [enrolled , setIsEnrolled] = useState(false)
+  const [added,setIsAdded]=useState(false)
     useEffect(() => {
         isEntrolled(courseDetails._id).then((response) => {
           console.log("isCourseEnrolled" , response.data
@@ -16,8 +18,30 @@ function BuyNowCard({courseDetails}) {
           if(response?.data?.entrolled===true) {
             setIsEnrolled(true)
           }
+        }).catch((err)=>{
+            console.log(err)
         })
-    })
+        isAdded(courseDetails._id).then((response)=>{
+            if(response.data.status===true){
+                setIsAdded(true)
+            }else{
+                setIsAdded(false)
+            }
+        }).catch((err)=>{
+            console.log(err)
+        })
+    },[courseDetails._id])
+
+    const handleAddCart=()=>{
+        addToCart(courseDetails._id).then((res)=>{
+            if(res.data.status===true){
+                setIsAdded(true)
+                toast.success('Course Added To The Cart')
+            }
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
 
 
   return (
@@ -33,22 +57,29 @@ function BuyNowCard({courseDetails}) {
                 <div className='button'>
                     {enrolled ?
                         <Link to={`/course/learn/${courseDetails._id}`}>
-                            {/* <Button width={true}>
-                                
-                            </Button> */}
                             <a  class="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
                             Continue Learning
-                </a>
+                            </a>
                         </Link>
-                        :
-                        <Link className='w-full' to={`/course-payment/${courseDetails._id}`}>
-                            {/* <Button width={true}>
-                                Buy Now
-                            </Button> */}
-                            <a class="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
-                            Buy Now
-                </a>
+                        :!added&&!courseDetails?.isFree?(
+                        <>
+                        <a onClick={handleAddCart} class="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
+                        Add To Cart
+                        </a>
+                        <Link className='w-full' to={`/course-payment`}  state={{courseId: courseDetails._id,message:'by-now' } }>
+                        <a class="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
+                        Buy Now
+                        </a>
                         </Link>
+                        </>
+                     ):
+                        (<Link className='w-full' to={`/course-payment`}
+                            state={{courseId: courseDetails._id } 
+                          }>
+                            <a className="block visible py-4 px-8 mb-4 text-xs font-semibold tracking-wide leading-none text-white bg-blue-500 rounded cursor-pointer sm:mr-3 sm:mb-0 sm:inline-block">
+                              Buy Now
+                            </a>
+                          </Link>)
                     }
                 </div>
             </div>
@@ -57,7 +88,9 @@ function BuyNowCard({courseDetails}) {
                 <p className='mt-3'>{courseDetails.course && courseDetails.course.length} Chapter </p>
                 <p className='mt-3'>Online accessibility</p>
             </div>
+            <ToastContainer/>
         </div>
+
   )
 }
 

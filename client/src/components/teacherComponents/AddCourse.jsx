@@ -5,9 +5,11 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from 'yup'
 import { toast, ToastContainer } from "react-toastify";
-import { addCourse, getCategory } from "../../services/teacherApi";
+import { addCourse, getCategory, videoUpload } from "../../services/teacherApi";
 import Navbar from "./teacherNav/Navbar";
 import Sidebar from "./teacherSideBar/Sidebar";
+import ProgressBar from '@ramonak/react-progress-bar'
+import axiosInstance from "../../axios/axiosTeacher";
 
 function AddCourse() {
   const navigate = useNavigate();
@@ -22,6 +24,8 @@ function AddCourse() {
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const teacherId = useSelector((state) => state.teacher.id);
+  const [percent,setPercent]=useState(null)
+  const [videoFile,setVideoFile]=useState(null)
 
   useEffect(() => {
     setLoading(true);
@@ -55,6 +59,24 @@ function AddCourse() {
   //   otherwise: Yup.mixed().nullable(),
   // }),
   });
+
+  const handleVideoChange=(e)=>{setVideoFile(e.target.files[0]),
+  handleVideo()
+  }
+
+ 
+
+  // const handleVideoCancel=()=>{
+  //   const action='cancel'
+  //   const formData=new FormData()
+  //   formData.append('action',action)
+  //   formData.append('video',videoFile)
+  //   videoUpload(formData).then((res)=>{
+  //     setPercent(null)
+  //   }).catch((err)=>{
+  //     console.log(err)
+  //   })
+  // }
 
   const formikSubmit=()=>{
     if(course.length===0){
@@ -120,17 +142,15 @@ function AddCourse() {
     lessonName: Yup.string().required("Lesson Name is Required"),
     videoUrl: Yup.string()
       .required("(Video Link Required")
-      .matches(
-        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/,
-        "Invalid YouTube link"
-      ),
+     ,
   });
 
   const lessonFormik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       chapterName: "",
       lessonName: "",
-      videoUrl: "",
+      videoUrl:"",
     },
     // Check validated
     validationSchema: validateLesson,
@@ -141,10 +161,12 @@ function AddCourse() {
       console.log("lesson Submit ", lesson);
       // After setting the lesson the lessoName field value will be cleared
       lessonFormik.setFieldValue("lessonName", "");
+      setPercent(null)
       // clearing the vedioUrl field
       lessonFormik.setFieldValue("videoUrl", "");
     },
   });
+
 
   // handle image select
   const handleClick = () => {
@@ -174,6 +196,24 @@ function AddCourse() {
     setLesson([]);
     successMessage("Chapter Added successfully");
   };
+
+  const handleVideo=(e)=>{
+    const formData=new FormData()
+    formData.append('video',e.target.files[0])
+    axiosInstance('teacherJwtToken').put('/teacher/uploadVideo',formData,{
+      onUploadProgress:(p)=>{
+          const percentComplete=Math.round(p.loaded*100/p.total)
+          setPercent({fileName:e.target.files[0].name,percentComplete})
+      },
+      headers:{
+      'Content-Type': 'multipart/form-data',
+  }}).then(async(res)=>{
+      console.log(res.data)
+      lessonFormik.setFieldValue('videoUrl',res.data.url)
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }
 
   const handleAssignment=(e)=>{
     if(isValidFileUpload(e.target.files[0])){
@@ -632,6 +672,34 @@ function AddCourse() {
                 </div>
                 <div className="relative mb-3 w-full sm:w-1/2   m-3">
                   <input
+                    type="file"
+                    name="video"
+                    onChange={(e) => {
+                      handleVideo(e);
+                    }}
+                    // value={lessonFormik.values.videoUrl}
+                    className="peer block min-h-[auto] w-full rounded border-gray-300  bg-transparent py-[0.32rem] px-3 leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
+                    id="videoUrl"
+                    // placeholder="Video Url"
+                  />
+                  {/* {lessonFormik.touched.videoUrl &&
+                  lessonFormik.errors.videoUrl ? (
+                    <p className="text-red-500 text-xs ">
+                      {lessonFormik.errors.videoUrl}
+                    </p>
+                  ) : null} */}
+
+                  <label
+                    htmlFor="videoUrl"
+                    className={`pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-500 transition-all duration-200 ease-out 
+                      
+                     `}
+                  >
+                    Video Link
+                  </label>
+                </div>
+                {/* <div className="relative mb-3 w-full sm:w-1/2   m-3">
+                  <input
                     type="text"
                     name="videoUrl"
                     onChange={(e) => {
@@ -659,7 +727,7 @@ function AddCourse() {
                   >
                     Video Link
                   </label>
-                </div>
+                </div> */}
                 <div className="relative mb-3 w-full md:w-1/3 m-3">
                   <button
                     type="button"
@@ -687,6 +755,18 @@ function AddCourse() {
                />
 
               </div>
+              {percent&&(
+                <div>
+                  <div className="flex flex-wrap">
+                    <h1>Percentage</h1>
+                    <p>{percent.fileName}</p>
+                  </div>
+                    <ProgressBar
+                      completed={percent.percentComplete}
+                      bgColor='blue'
+                    />
+                  </div>
+              )}
 
               {lesson[0] ? (
                 <div>

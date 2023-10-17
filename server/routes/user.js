@@ -1,6 +1,6 @@
 import express from 'express'
 const router=express.Router()
-import { userLogin, userSignup, forgotPassword, resendOtp, googleAuth, userAuth,getUser, getAllCourse,getCourse,getEntrolled,imageUpload, editProfile} from '../controller/userController.js'
+import { userLogin, userSignup, forgotPassword, resendOtp,getCart,removeCart, googleAuth, userAuth,getUser,addToCart, getAllCourse,getCourse,getEntrolled,imageUpload, editProfile} from '../controller/userController.js'
 import {cancelPayment, CheckOut, verifyPayment,isEntrolled} from '../controller/orderController.js'
 import verifyUser from '../middlewares/userAuth.js'
 import { AskQuestion } from '../controller/courseController.js'
@@ -45,5 +45,11 @@ router.put('/uploadImage',upload.single("my_file"),verifyUser,imageUpload)
 router.put('/editProfile',verifyUser,editProfile)
 
 router.get('/user',verifyUser,getUser)
+
+router.post('/addToCart',verifyUser,addToCart)
+
+router.get('/getCart',verifyUser,getCart)
+
+router.delete('/removeCart/:courseId',verifyUser,removeCart)
 
 export default router

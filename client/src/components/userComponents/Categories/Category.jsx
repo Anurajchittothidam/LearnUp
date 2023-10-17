@@ -19,13 +19,13 @@ function Category() {
   const [filterCategory, setfilterCategory] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const [limit,setLimit]=useState(3)
+  const [limit, setLimit] = useState(3);
   const [price, setPrice] = useState("All");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     // setIsLoading(true)
-    allCourses(filterCategory.toString(), price, search, sort, page,limit)
+    allCourses(filterCategory.toString(), price, search, sort, page, limit)
       .then((res) => {
         if (res.data.block === "true") {
         } else {
@@ -50,7 +50,6 @@ function Category() {
   }, [sort, filterCategory, page, search, price]);
 
   const filterChange = (e) => {
-    
     if (e.target.checked) {
       setfilterCategory((prev) => [...prev, e.target.value]);
     } else {
@@ -76,7 +75,6 @@ function Category() {
             <div className="flex flex-row justify-between">
               <div className="basis-1/4">
                 <h3 className="ps-5 text-3xl">All Courses</h3>
-
               </div>
               <div className="basis-2/4">
                 <label
@@ -120,12 +118,12 @@ function Category() {
                 {categories.map((category, index) => (
                   <div className="flex items-center ps-5 p-3" key={index}>
                     <input
-                id={`checked-checkbox-${index}`}
-                type="checkbox"
-                onChange={(e) => filterChange(e)}
-                value={category?.name}
-                className="w-5 h-5 border-gray-300 focus:ring-blue-700 focus:ring-offset-2 focus:ring checked:bg-red-400 rounded"
-              />
+                      id={`checked-checkbox-${index}`}
+                      type="checkbox"
+                      onChange={(e) => filterChange(e)}
+                      value={category?.name}
+                      className="w-5 h-5 border-gray-300 focus:ring-blue-700 focus:ring-offset-2 focus:ring checked:bg-red-400 rounded"
+                    />
                     <label
                       htmlFor={`checked-checkbox-${index}`}
                       className="ml-5 text-xl font-medium text-gray-900 dark:text-gray-300"
@@ -184,7 +182,6 @@ function Category() {
                     All
                   </label>
                 </div>
-
 
                 <select
                   onChange={(e) => setSort(e.target.value)}
@@ -265,7 +262,7 @@ function Category() {
                             alt="Colors"
                           />
                           <p className="absolute top-0 bg-yellow-300 text-gray-800 font-semibold py-1 px-3 rounded-br-lg rounded-tl-lg">
-                            $ {result?.price}
+                          ₹ {result?.price}
                           </p>
                         </div>
                         <h1 className="mt-4 text-gray-800 text-2xl font-bold cursor-pointer">
@@ -329,9 +326,12 @@ function Category() {
                             </span>
                             <p>{result.language}</p>
                           </div>
-                          <button  onClick={() =>
+                          <button
+                            onClick={() =>
                               navigate(`/course-details/${result._id}`)
-                            } className="mt-4 text-xl w-full text-white bg-indigo-600 py-2 rounded-xl shadow-lg">
+                            }
+                            className="mt-4 text-xl w-full text-white bg-indigo-600 py-2 rounded-xl shadow-lg"
+                          >
                             {result.price === 0
                               ? "Entroll Now "
                               : "Purchase Now"}
@@ -353,7 +353,7 @@ function Category() {
                     <li>
                       <a
                         onClick={() => setPage((pre) => pre - 1)}
-                        class="flex items-center justify-center px-4 h-10 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="cursor-pointer flex items-center justify-center px-4 h-10 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                       >
                         <svg
                           class="w-3.5 h-3.5 mr-2"
@@ -374,23 +374,27 @@ function Category() {
                       </a>
                     </li>
                   )}
-                  {Array.from({ length: total }, (_, index) => (
-                    <li key={index}>
-                      <a
-                        onClick={() => setPage(index + 1)}
-                        className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >
-                        {index + 1}
-                      </a>
-                    </li>
-                  ))}
+                  {Array.from({ length: total }, (_, index) => {
+                    const color =
+                      page === index + 1 ? "bg-blue-500" : "bg-white";
 
-                
+                    return (
+                      <li key={index}>
+                        <a
+                          onClick={() => setPage(index + 1)}
+                          className={`cursor-pointer flex items-center justify-center px-4 h-10 leading-tight  ${color} border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white `}
+                        >
+                          {index + 1}
+                        </a>
+                      </li>
+                    );
+                  })}
+
                   {page !== total && (
                     <li>
                       <a
                         onClick={() => setPage((pre) => pre + 1)}
-                        class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                        class="cursor-pointer flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                       >
                         Next
                         <svg

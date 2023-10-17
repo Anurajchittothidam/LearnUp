@@ -27,7 +27,8 @@ function Courses() {
             setData(res.data.courses)
             }
         }).catch((err)=>{
-            toast.error(err)
+            navigate('/teachers/login')
+            toast.error(err.response.data.message)
         }).finally(()=>{
             setIsLoading(false)
         })

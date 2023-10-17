@@ -3,7 +3,7 @@ import { toast,ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Swal from "sweetalert2"
 import {useNavigate} from 'react-router-dom'
-import { blockUnblockUser,  getUsers } from "../../../services/adminApi";
+import { blockUnblockUser,  getUsers, verifyTeacher } from "../../../services/adminApi";
 import NavBar from "../navBar/navBar.jsx";
 import SideBar from "../sideBar/SideBar.jsx";
 
@@ -59,6 +59,24 @@ const UserTeacher=(props)=> {
         })
       }
       navigate(`/admin/${e.name}`)
+    }).catch((err)=>{
+      toast.error(err.message)
+    }).finally(()=>{
+      setIsLoading(false)
+    })
+  }
+
+  function handleVerify(e){
+    setIsLoading(true)
+    verifyTeacher(e).then((res)=>{
+      if(res){
+        userDetails.map((obj)=>{
+          if(obj._id===e.id && obj.verify===false){
+            obj.verify=true
+          }
+        })
+      }
+      navigate(`/admin/teachers`)
     }).catch((err)=>{
       toast.error(err.message)
     }).finally(()=>{
@@ -142,7 +160,10 @@ const UserTeacher=(props)=> {
                           <span className="inline-block  w-1/3 md:hidden font-bold">
                             Actions
                           </span>
-                         
+                         {value?.role==='teachers'&&(
+                          value?.verify===false ? <button onClick={()=>handleVerify({id:value?._id})} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded mx-2">Verify</button> : 
+                          <button className="bg-green-500 hover:bg-gree-700 text-white font-bold py-1 px-2 border border-green-500 rounded mx-2">Verifyied</button>
+                         )}
                           {value.block===false ? <button onClick={()=>blockUser({name:value?.role,id:value?._id})} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded mx-2">Block</button> : 
                              <button onClick={()=>blockUnblock({name:value?.role,id:value?._id})} className="bg-green-500 hover:bg-gree-700 text-white font-bold py-1 px-2 border border-green-500 rounded mx-2">UnBlock</button>} 
                         </td>

@@ -7,11 +7,15 @@ import axios from 'axios'
 import categories from '../models/categorySchema.js'
 import handleUpload from '../middlewares/imageUpload.js';
 import Multer from 'multer'
+import AWS from 'aws-sdk'
+import fs from 'fs'
 import dotenv from 'dotenv'
 import Course from '../models/courseSchema.js'
 import Order from '../models/orderSchema.js'
 import mongoose from 'mongoose';
+import { S3Upload } from '../middlewares/videoUpload.js';
 dotenv.config()
+
 
 let userDetails;
 
@@ -20,6 +24,19 @@ const secretId=process.env.SECRET_KEY
 const createToken=(id)=>{
     return jwt.sign({id},secretId,{expiresIn:maxAge})
 }
+
+const bucketName = process.env.AWS_S3_BUCKET_NAME
+const region = process.env.AWS_S3_BUCKET_REGION
+const accessKeyId = process.env.AWS_S3_ACCESS_KEY
+const secretAccessKey = process.env.AWS_S3_SECRET_KEY
+process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
+
+const s3 = new AWS.S3({
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+    region:region
+});
+
 
 const teacherLogin=async(req,res)=>{
     try{
@@ -155,7 +172,6 @@ const editProfile=async(req,res)=>{
     }
 }
 
-
 const forgotPassword=async(req,res)=>{
     try{
         const {email,password}=req.body
@@ -266,8 +282,7 @@ const authTeacher=(req,res)=>{
                                return res.status(400).json({status:false,message:"Your accound blocked"})
                             }else{
                                  // if user exist passing the user id with the request
-                                res.status(200).json({status:true,teacher:Teacher,message:'authorised'})
-                                req.teacherId=decoded.id
+                                res.status(200).json({status:true,teacher:Teacher,teacherId:decoded.id,message:'authorised'})
                             }
                         }else{
                            return res.status(400).json({status:false,message:"Teacher not exist"})
@@ -350,6 +365,82 @@ const uploadImage=async(req,res)=>{
     }
 }
 
+const videoUpload=async(req,res)=>{
+    try{
+        if(!req.file){
+            return res.status(400).json({status:false,message:'Video not found'})
+        }else{
+            const file=req.file
+
+            const fileStream=fs.createReadStream(file.path);
+    const params = {
+        Bucket: bucketName,
+        Key: file.originalname,
+        // ACL:"public-read-write",   
+        Body: fileStream,
+    };
+    
+      s3.upload(params, function (err, data) {
+            console.log(data)
+            if (err) {
+                throw err
+            }
+            console.log(`File uploaded successfully. 
+                          ${data.Location}`);
+            return res.status(200).json({status:true,url:data.Location,message:'Video uploaded'})
+        })
+            // if(req.body.action==='cancel'){
+            //     const url=await S3Upload({file,action:'cancel'})
+            //     console.log('cancel',url)
+            //     return res.status(200).json({status:true,message:'Video uploading cancelled'})
+            // }else{
+                // const url=await S3Upload(file)
+                    // console.log('url',data.Location)
+                    // const corse=await Course.findOne({})
+            // }
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const verifyTeacherController=async(req,res)=>{
+    try{
+        const secret=process.env.SECRET_KEY
+                const authHeader=req.headers.authorization
+            if(authHeader){
+                const token=authHeader.split(' ')[1]
+                jwt.verify(token,secret,async(err,decoded)=>{
+                    if(err){
+                       return res.status(400).json({status:false,message:"Permission not allowed",err})
+                    }else{
+                        //finding teacher with decoded id
+                        const Teacher=await users.findById(decoded.id)
+                        if(Teacher){
+                            if(Teacher.block===true){
+                               return res.status(400).json({status:false,message:"Your accound blocked"})
+                            }else{
+                                 // if user exist passing the user id with the request
+                                 if(Teacher.verify===false){
+                                    return res.status(400).json('This account is not verified')
+                                }else{
+                                    res.status(200).json({status:true,teacher:Teacher,teacherId:decoded.id,message:'authorised'})
+                                }
+                            }
+                        }else{
+                           return res.status(400).json({status:false,message:"Teacher not exist"})
+                        }
+                    }
+                })
+            }else{
+               return res.status(400).json({status:false,message:"No token found"})
+            }
+            }catch(err){
+                return res.status(400).json('Something went wrong')
+            }
+  
+}
+
 const replyQuestion=async(req,res)=>{
     try{
         const courseId=req.body.courseId
@@ -385,7 +476,108 @@ const getAllStudents=async(req,res)=>{
     }
 }
 
+const getDashboard=async(req,res)=>{
+    try{
+        const teacherId=new mongoose.Types.ObjectId(req.teacherId)
+        const students=await users.find({role:'users'}).count()
+        const entrolled=await Order.aggregate([
+            {
+                $match:{
+                    teacher:teacherId
+                }
+            },
+            {
+                $lookup:{
+                    from:'courses',
+                    localField:'course',
+                    foreignField:'_id',
+                    as:'courseInfo'
+                }
+            },
+            {
+                $unwind:'$courseInfo'
+                
+            },
+            {
+                $match:{
+                    'courseInfo.teacher':teacherId
+                }
+            },
+            {
+                $group:{
+                    _id:null,
+                    studentCount:{$sum:1}
+                }
+            }
+        ])
+        
+        const entrolledStudents=entrolled[0]?entrolled[0].studentCount:0
+
+        const courses=await Course.find({teacher:teacherId}).count()
+
+        console.log(courses)
+
+        let  revanueDetails = await Order.aggregate([
+            {
+              $group: {
+                _id: { $month: "$purchase_date" },
+                total: { $sum: "$total" }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                month: "$_id",
+                total: 1
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                data: {
+                  $push: {
+                    $cond: [
+                      { $ifNull: ["$total", false] },
+                      "$total",
+                      0
+                    ]
+                  }
+                },
+                months: {
+                  $push: "$month"
+                }
+              }
+            },
+            {
+              $project: {
+                _id: null,
+                data: {
+                  $map: {
+                    input: { $range: [1, 13] },
+                    as: "m",
+                    in: {
+                      $cond: [
+                        { $in: ["$$m", "$months"] },
+                        { $arrayElemAt: ["$data", { $indexOfArray: ["$months", "$$m"] }] },
+                        null
+                        
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]);
+
+        return res.status(200).json({status:true,students,entrolledStudents,courses,revanueDetails:revanueDetails[0].data})
+
+    }catch(err){
+        console.log(err)
+        return res.status(400).json('Something went wrong')
+    }
+}
 
 
 
-export {teacherLogin,authTeacher,getCategory,teacherSignup,getTeacher,getAllStudents,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}
+
+export {teacherLogin,authTeacher,getCategory,getDashboard,videoUpload,verifyTeacherController,teacherSignup,getTeacher,getAllStudents,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}

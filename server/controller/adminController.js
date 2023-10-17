@@ -2,9 +2,12 @@ import users from '../models/userSchema.js'
 import teachers from '../models/teacherSchema.js'
 import categories from '../models/categorySchema.js'
 import jwt from 'jsonwebtoken'
+import course from '../models/courseSchema.js'
+import Order from '../models/orderSchema.js'
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 import { sendEmail, verifyOTP } from '../helpers/sendMailTeacher.js'
+import mongoose from 'mongoose'
 dotenv.config()
 
 const adminLogin=async (req,res)=>{
@@ -152,7 +155,8 @@ const addTeachers=async(req,res)=>{
                             email,
                             password:hash,
                             phoneNumber,
-                            role:'teachers'
+                            role:'teachers',
+                            verify:true,
                         })
                         newTeacher.save().then((teacher)=>{
                            return res.status(200).json({teacher,status:true})
@@ -268,4 +272,77 @@ const editCategory=async(req,res)=>{
     }
 }
 
-export {adminLogin,authAdmin,blockUnblockUser,getAllUsers,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}
+const verifyTeacher=async(req,res)=>{
+    try{
+        const id=new mongoose.Types.ObjectId(req.body.id)
+        const teacher=await users.findOne({_id:id})
+        console.log(teacher)
+        if(teacher.verify===false){
+            users.updateOne({_id:id},{$set:{verify:true}}).then((response)=>{
+                return res.status(200).json('Teacher Verified')
+            }).catch((err)=>{
+                return res.status(400).json(err)
+            })
+        }else{
+            return res.status(200).json("Teacher alredy verified")
+        }
+    }catch(err){
+        return res.status(400).json("Something went wrong")
+    }
+}
+
+const getDashboard=async(req,res)=>{
+    try{
+        const teachers=await users.find({role:'teachers'}).count()
+        const students=await users.find({role:'users'}).count()
+        const courses=await course.find({block:false}).count()
+        const orders=await Order.find({status:true}).count()
+        let studentJoinedDetails = await users.aggregate([
+            {
+                $match:{
+                    role:'users'
+                }
+            },
+            {
+              $group: {
+                _id: { $month: "$createdAt" },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                data: {
+                  $push: { $ifNull: ["$count", 0] }
+                },
+                months: {
+                  $push: "$_id"
+                }
+              }
+            },
+            {
+              $project: {
+                _id: null,
+                data: {
+                  $map: {
+                    input: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    as: "m",
+                    in: {
+                      $cond: {
+                        if: { $in: ["$$m", "$months"] },
+                        then: { $arrayElemAt: ["$data", { $indexOfArray: ["$months", "$$m"] }] },
+                        else: null
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]);
+        return res.status(200).json({status:true,teachers,students,courses,orders,studentJoinedDetails:studentJoinedDetails[0].data})
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+export {adminLogin,authAdmin,blockUnblockUser,getAllUsers,verifyTeacher,getDashboard,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}

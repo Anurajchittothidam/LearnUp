@@ -13,6 +13,7 @@ import EditCoursePage from '../pages/teacherSide/EditCoursePage'
 import Questions from '../components/teacherComponents/Questions'
 import ReplyQuestions from '../components/teacherComponents/ReplyQuestions'
 import Students from '../components/teacherComponents/Students'
+import VerifyTeacher from '../util/VerifyTeacher'
 
 function Teacher() {
   return (
@@ -23,7 +24,9 @@ function Teacher() {
       <Route path='/profile' element={<Profile/>}></Route>
       <Route path='/editProfile' element={<EditProfile/>}></Route>
       <Route path='/courses' element={<CoursesPage/>}></Route>
+      <Route element={<VerifyTeacher/>}>
       <Route path='/addCourse' element={<AddCoursePage/>}></Route>
+      </Route>
       <Route path='/editCourse/:id' element={<EditCoursePage/>}></Route>
       <Route path='/courseDetails' element={<Questions/>}></Route>
       <Route path='/questions/reply/:courseId' element={<ReplyQuestions/>}></Route>

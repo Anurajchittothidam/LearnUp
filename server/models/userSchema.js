@@ -40,7 +40,13 @@ const userSchema=new mongoose.Schema({
     },
     picture:{
         type:String
+    },
+    verify:{
+        type:Boolean,
+        default:false,
     }
+},{
+    timestamps:true
 })
 
 const userModel=mongoose.model('users',userSchema)

@@ -81,7 +81,8 @@ function Login() {
           navigate('/teachers/')
         }
       }).catch((err)=>{
-        toast.error(err)
+        console.log(err)
+        toast.error(err.response.data)
       })
 }});
   return (

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import handleUpload from '../middlewares/imageUpload.js';
 import Course from '../models/courseSchema.js'
+import users from '../models/userSchema.js'
 import categories from '../models/categorySchema.js'
 import cloudinary from '../config/cloudinary.js';
 
@@ -11,9 +12,10 @@ const addCourse=async(req,res)=>{
             // throw new Error('Enter the complete fields')
             return res.status(400).json({status:false,message:'Enter the complete fields'})
         }else{
-            if(!req.body.course){
+            
+                if(!req.body.course){
                 return res.status(400).json({status:false,message:'Atleast one chapter is needed'})
-            }else{
+                }else{
                 const coursePrice=isFree==='true' ? 0 :price;
                 const updateAssignmentToCloudinary=async(assignment)=>{
                     if(assignment){

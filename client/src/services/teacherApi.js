@@ -42,6 +42,14 @@ export const imageUpload=(data)=>{
       }})
 }
 
+export const videoUpload=(data)=>{
+    console.log('action',data.action)
+    return axios('teacherJwtToken').put('/teacher/uploadVideo',data,{
+        headers:{
+        'Content-Type': 'multipart/form-data',
+    }})
+}
+
 export const teacherEditProfile=(data)=>{
     return axios('teacherJwtToken').put('/teacher/editProfile',{...data})
 }
@@ -85,4 +93,11 @@ export const getAllStudents=(courseId)=>{
     return axios('teacherJwtToken').get(`/teacher/getAllStudents/${courseId}`)
 }
 
+export const verifyTeacher=()=>{
+    return axios('teacherJwtToken').get("/teacher/verify")
+}
+
+export const getTeacherDashboard=()=>{
+    return axios('teacherJwtToken').get('/teacher/dashboard')
+}
 

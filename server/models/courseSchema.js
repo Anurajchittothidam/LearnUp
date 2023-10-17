@@ -65,12 +65,12 @@ const courseSchema=mongoose.Schema({
             ]
         }
     ],
-    entrolled:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'users'
-        }
-    ],
+    // entrolled:[
+    //     {
+    //         type:mongoose.Schema.Types.ObjectId,
+    //         ref:'users'
+    //     }
+    // ],
     image:{
         type:String,
     },

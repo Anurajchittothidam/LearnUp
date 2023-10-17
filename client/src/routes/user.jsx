@@ -14,6 +14,7 @@ import EntrolledCourses from '../components/userComponents/EntrolledCourses'
 import Learn from '../components/userComponents/Learn/Learn'
 import Profile from '../components/userComponents/Profile'
 import EditProfile from '../components/userComponents/EditProfile'
+import Cart from '../components/userComponents/Cart'
 
 function UserComponents() {
   return (
@@ -28,13 +29,14 @@ function UserComponents() {
         <Route path='/course-details/:id' element={<CourseDetails/>}></Route>
 
         <Route element={<PrivateRoute route={'/login'} role={'user'}/>}>
-        <Route path='/course-payment/:id' element={<CheckOut/>}></Route>
+        <Route path='/course-payment' element={<CheckOut/>}></Route>
         <Route path='/order-success' element={<OrderSuccess/>}></Route>
         <Route path='/order-failed' element={<OrderFailed/>}></Route>
         <Route path='/my-entrollments' element={<EntrolledCourses/>}></Route>
         <Route path='/course/learn/:courseId' element={<Learn/>}></Route>
         <Route path='/profile' element={<Profile/>}></Route>
         <Route path='/editProfile' element={<EditProfile/>}></Route>
+        <Route path='/my-cart' element={<Cart/>}></Route>
         </Route>
     </Routes>
 

@@ -50,3 +50,12 @@ export const editCategory=({name,id})=>{
     return axios("adminJwtToken").put(`/admin/categories/edit/${id}`,{name})
 }
 
+export const verifyTeacher=(id)=>{
+    console.log(id)
+    return axios('adminJwtToken').patch('/admin/verifyTeacher',{id})
+}
+
+export const getAdminDashboard=()=>{
+    return axios('adminJwtToken').get('/admin/dashboard')
+}
+

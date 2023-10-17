@@ -45,8 +45,8 @@ export const isEntrolled=(courseId)=>{
     return axios('JwtToken').get(`/isEntrolled/${courseId}`)
 }
 
-export const handleCheckout=(values,courseId,userId)=>{
-    return axios('JwtToken').post('/checkOut',{...values,courseId,userId})
+export const handleCheckout=(values,cartData,courseId,userId)=>{
+    return axios('JwtToken').post('/checkOut',{...values,cartData,courseId,userId})
 }
 
 export const getAllCategories=()=>{
@@ -74,4 +74,20 @@ export const userEditProfile=(data)=>{
 
 export const getUser=()=>{
     return axios('JwtToken').get('/user')
+}
+
+export const addToCart=(courseId)=>{
+    return axios('JwtToken').post('/addToCart',{courseId:courseId,action:'add'})
+}
+
+export const isAdded=(courseId)=>{
+    return axios('JwtToken').post('/addToCart',{courseId:courseId,action:'isAdd'})
+}
+
+export const getCart=()=>{
+    return axios('JwtToken').get('/getCart')
+}
+
+export const removeFromCart=(courseId)=>{
+    return axios('JwtToken').delete(`/removeCart/${courseId}`)
 }

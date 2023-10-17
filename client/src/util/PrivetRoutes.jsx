@@ -29,10 +29,10 @@ function PrivateRoute(props) {
             setIsLoading(true)
             authTeacher().then((res)=>{
                 dispatch(setTeacherDetails({...teacher,status:true}))
-                console.log(res.data)
+                console.log('auth-teacher',res.data)
                 setAuth(true)
-            }).catch((response)=>{
-                console.log(response)
+            }).catch((err)=>{
+                console.log('teacher-err',err)
                 setAuth(false)
             }).finally(()=>{
                 setIsLoading(false)

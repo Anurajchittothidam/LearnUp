@@ -10,16 +10,16 @@ const orderSchema=new mongoose.Schema({
         ref:'users',
         required:true,
     },
-    teacher:{
+    teacher:[{
         type:mongoose.Types.ObjectId,
         ref:'users',
         required:true
-    },
-    course:{
+    }],
+    course:[{
         type:mongoose.Types.ObjectId,
         ref:'Course',
         required:true,
-    },
+    }],
     address:{
         type:Object,
         required:true

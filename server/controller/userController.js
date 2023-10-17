@@ -8,6 +8,7 @@ import Course from '../models/courseSchema.js'
 import categories from '../models/categorySchema.js'
 import Order from '../models/orderSchema.js'
 import mongoose from 'mongoose'
+import Cart from '../models/cartSchema.js'
 import handleUpload from '../middlewares/imageUpload.js'
 dotenv.config()
 
@@ -316,6 +317,65 @@ const editProfile=async(req,res)=>{
     }
 }
 
+const addToCart=async(req,res)=>{
+    try{
+        const userId=req.userId
+        const courseId=req.body.courseId
+        if(req.body.action==='add'){
+            const exist=await Cart.findOne({userId,courseId})
+            if(exist){
+                return res.status(400).json('This course alredy added')
+            }else{
+            const added=new Cart({
+                user:userId,
+                course:courseId
+            })
+            await added.save()
+            return res.status(200).json({status:true,message:'Course added to the cart'})
+            }
+        }else{
+            const exist=await Cart.findOne({course:courseId,user:userId})
+            if(exist){
+                return res.status(200).json({status:true,message:'Alredy added'})
+            }else{
+                return res.status(200).json({status:false,message:'not added'})
+            }
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+
+}
+
+const getCart=async(req,res)=>{
+    try{
+        const userId=req.userId
+        const courses=await Cart.find({user:userId}).populate('course')
+        if(courses){
+            return res.status(200).json({courses:courses,message:'Success'})
+        }else{
+            return res.status(400).json({message:'No course Found'})
+        }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
+
+const removeCart=async(req,res)=>{
+    try{
+        const userId=req.userId
+        const courseId=req.params.courseId
+        const remove=await Cart.deleteOne({user:userId,course:courseId})
+        if(remove){
+            return res.status(200).json({status:true,message:'removed success'})
+        }else{
+            return res.status(400).json({status:false,message:'Not removed'})
+        }
+    }catch(err){
+        return res.status(400).json("Something went wrong")
+    }
+}
+
 const getUser=async(req,res)=>{
     try{
         const userId=req.userId
@@ -336,22 +396,12 @@ const getEntrolled=async(req,res)=>{
     try{
         const userId=new mongoose.Types.ObjectId(req.userId)
         const search=req.query.search||""
-        // const query={
-        //     user:userId,
-        //     name:{$regex:`^${search}`,$options:"i"}
-        // }
+      
         const courses = await Order.aggregate([
             {
                 $match: {
-                    user: userId
-                }
-            },
-            {
-                $lookup:{
-                    from:'users',
-                    localField:'teacher',
-                    foreignField:'_id',
-                    as:'teacherInfo'
+                    user: userId,
+                    status:true,
                 }
             },
             {
@@ -362,22 +412,40 @@ const getEntrolled=async(req,res)=>{
                     as:'courseInfo'
                 }
             },
+            
             {
-                $match:{
-                    $or:[
-                        {
-                            'courseInfo.name':{
-                                $regex:`^${search}`,$options:'i'
-                            }
-                        }
-                    ]
+                $unwind:'$courseInfo'
+            },
+            
+            {
+                $lookup:{
+                    from:'users',
+                    localField:'teacher',
+                    foreignField:'_id',
+                    as:'teacherInfo'
                 }
             },
+            {
+                $unwind:'$teacherInfo'
+            },
+            {
+                $match:{
+                    'courseInfo.name':{
+                        $regex:`^${search}`,$options:'i'
+                    },       
+                }
+            },
+            {
+                $project:{
+                    courseInfo:'$courseInfo',
+                    teacherInfo:'$teacherInfo',
+                }
+            }
+            
         ]);
         
 
         // const courses=await Order.find(query).populate('teacher').populate('course')
-        console.log(courses)
         if(courses){
             return res.status(200).json({courses:courses,message:'Success'})
         }else{
@@ -454,4 +522,4 @@ const forgotPassword=async(req,res)=>{
     }
 }
 
-export {userLogin,userAuth,userSignup,forgotPassword,resendOtp,googleAuth,getAllCourse,getCourse,getEntrolled,imageUpload,editProfile,getUser}
+export {userLogin,userAuth,userSignup,getCart,removeCart,forgotPassword,addToCart,resendOtp,googleAuth,getAllCourse,getCourse,getEntrolled,imageUpload,editProfile,getUser}
