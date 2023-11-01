@@ -1,5 +1,4 @@
 import multer from 'multer'
-import multers3 from 'multer-s3'
 import AWS from 'aws-sdk'
 import fs from 'fs'
 import dotenv from 'dotenv'
