@@ -21,7 +21,6 @@ const verifyTeacher=(req,res,next)=>{
                     }else{
                          // if user exist passing the user id with the request
                         req.teacherId=decoded.id
-                        console.log(req.teacherId)
                         next()
                     }
                 }else{

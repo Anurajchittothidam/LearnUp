@@ -16,12 +16,8 @@ function Students() {
         setIsLoading(true)
         getAllStudents(courseId).then((res)=>{
             if(res.data.users){
-                console.log(res.data.users)
                //  toast.error(res.data.message)
                 setData(res.data.users)
-            }else{
-            // toast.success(res.data.message)
-                console.log(res.data)
             }
         }).catch((err)=>{
             toast.error(err)
@@ -77,7 +73,7 @@ function Students() {
                         <td class="px-4 py-3 border">
                           <div class="flex items-center text-sm">
                             <div class="relative w-8 h-8 mr-3 rounded-full md:block">
-                              <img class="object-cover w-full h-full rounded-full" src='https://lh3.googleusercontent.com/a/AAcHTtf72DF4pHnyr2ezjRenA6_cGfVoPKgu0WbR7H_CEgx_=s96-c' alt="" loading="lazy" />
+                              <img class="object-cover w-full h-full rounded-full" src={result?.user?.picture} alt="" loading="lazy" />
                               <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
                             </div>
                             <div>

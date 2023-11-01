@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import SyllabusDropdown from '../SyllabusDropDown/SyllabusDropDown';
 import Youtube from 'react-youtube'
-import getYouTubeID from "get-youtube-id";
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { setCourseDetails } from '../../../redux/features/CourseRedux';
-import { getCourse } from '../../../services/userApi';
+import { getCourse, getVideoUrl } from '../../../services/userApi';
 import Navbar from '../Navbar';
 import DescriptionCard from './DescriptionCard';
 import QuestionCard from './QuestionCard';
@@ -15,7 +14,6 @@ function Learn() {
     const [isLoading,setIsLoading]=useState()
     const [vedioId, setVedioId] = useState();
     const courseDetails = useSelector((state) => state.course.value);
-    console.log(courseDetails)
     const [index , setIndex] = useState(0)
     const [playerHeight, setPlayerHeight] = useState("");
     const [activeTab, setActiveTab] = useState("Description");
@@ -56,8 +54,14 @@ function Learn() {
 
   // youtube vedio id generator
   const getYoutubeVideoId = (vedioUrl) => {
-    setVedioId(getYouTubeID(vedioUrl));
+    getVideoUrl(vedioUrl).then((res)=>{
+      setVedioId(res.data.url)
+    }).catch((err)=>{
+      console.log(err)
+    })
+    // setVedioId();
   };
+
 
 
 
@@ -95,9 +99,9 @@ function Learn() {
 
 
     // Setting first video to the vedio Controller
-    if (courseDetails) {
-      getYoutubeVideoId(courseDetails.course[0].lessons[0].vedioUrl);
-    }
+    // if (courseDetails) {
+    //   getYoutubeVideoId(courseDetails.course[0].lessons[0].vedioUrl);
+    // }
 
 
 
@@ -152,7 +156,7 @@ function Learn() {
           <div className="flex flex-col sm:flex-row  ">
             <div className="w-full lg:w-8/12 overflow-auto">
               <div className="flex text-slate-700 items-center py-4 pl-2 border-b border-slate-300">
-                <Link to={"/my-entrollments"}>
+                <button onClick={()=>{navigate("/my-entrollments"),setVedioId('')}}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"
@@ -165,7 +169,7 @@ function Learn() {
                       clipRule="evenodd"
                     />
                   </svg>
-                </Link>
+                </button>
 
                 <h1 className="ml-3 text-md ">
                   {" "}
@@ -175,8 +179,9 @@ function Learn() {
 
               <div>
                 {vedioId ? (
-                  <div>
-                    <Youtube videoId={vedioId} opts={opts} />
+                  <div className='flex justify-center'>
+                    <video src={vedioId} controls></video>
+                    {/* <Youtube videoId={vedioId} opts={opts} /> */}
                   </div>
                 ) : (
                   <div

@@ -5,7 +5,6 @@ export const userLogin=(userDetails)=>{
 }
 
 export const userSignup=(userDetails)=>{
-    console.log(userDetails)
     return axios('JwtToken').post('/signup',{...userDetails,action:'send'})
 }
 
@@ -68,7 +67,6 @@ export const imageUpload=(data)=>{
 }
 
 export const userEditProfile=(data)=>{
-    console.log(data)
     return axios('JwtToken').put('/editProfile',{...data})
 }
 
@@ -91,3 +89,36 @@ export const getCart=()=>{
 export const removeFromCart=(courseId)=>{
     return axios('JwtToken').delete(`/removeCart/${courseId}`)
 }
+
+export const addReview=(rating,text,courseId)=>{
+    return axios('JwtToken').put('/addReview',{rating,text,courseId})
+}
+
+export const getReviews=(courseId)=>{
+    return axios('JwtToken').get(`/getReviews/${courseId}`)
+}
+
+export const reportTeacher=(teacherId,reason)=>{
+    return axios('JwtToken').put('/reportTeacher',{teacherId,reason})
+}
+
+export const reportCourse=(courseId,reason)=>{
+    return axios('JwtToken').put('/reportCourse',{courseId,reason})
+}
+
+export const reportUser=(userId,reason)=>{
+    return axios('JwtToken').put('/reportUser',{userId,reason})
+}
+
+export const deleteReview=(reason,courseId)=>{
+    return axios("JwtToken").put('/deleteReview',{courseId,reason})
+}
+
+export const editReview=(newReview,newRating,review,courseId)=>{
+    return axios('JwtToken').put('/editReview',{review,courseId,newReview,newRating})
+}
+
+export const getVideoUrl=(videoUrl)=>{
+    return axios('JwtToken').get(`/getVideoUrl?url=${videoUrl}`)
+}
+

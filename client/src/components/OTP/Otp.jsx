@@ -74,7 +74,6 @@ function Otp(props) {
 
     const handleSubmit=(values)=>{
         setIsLoading(true)
-        console.log("handle Submit");
         if(props.data==='admin'){
             addTeachersOtp(values)
             .then((response) => {
@@ -89,7 +88,6 @@ function Otp(props) {
                 setIsLoading(false)
             })
         }else if(props.data==='teacher'){
-            console.log('dfsf')
             teacherSignupOtp(values)
         .then((response) => {
             if (response) {
@@ -98,7 +96,7 @@ function Otp(props) {
                 toast.error(response.data.message)
             }
         }).catch((err)=>{
-            toast.error(err.message)
+            toast.error(err.response.data.message)
         }).finally(()=>{
             setIsLoading(false)
         })
@@ -135,8 +133,7 @@ function Otp(props) {
                     toast.error(response.data)
                 }
             }).catch((err)=>{
-                console.log(err)
-                toast.error(err.message)
+                toast.error(err.response.data.message)
             }).finally(()=>{
                 setIsLoading(false)
             })
@@ -390,9 +387,9 @@ function Otp(props) {
                 <div className='grid-cols-1 shadow-none sm:shadow-xl form-box p-7'>
                     <h2 style={{ color: "#6255a4" }} className='text-center text-2xl font-medium pb-5'>Enter OTP</h2>
                     <p className='text-center pb-6'>We sent you a verification code to your email</p>
-                    <span className="countdown">
+                    {/* <span className="countdown">
                         <span className='text-red-400'>{remainingTime}</span>
-                    </span>
+                    </span> */}
                         <div className='text-center flext justify-center'>
                             {renderInput()}
                         </div>

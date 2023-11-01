@@ -8,7 +8,6 @@ function VerifyTeacher() {
   useEffect(()=>{
     setIsLoading(true)
     verifyTeacher().then((res)=>{
-      console.log(res)
       setAuth(true)
     }).catch((err)=>{
       console.log(err)

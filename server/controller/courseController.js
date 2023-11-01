@@ -8,7 +8,7 @@ import cloudinary from '../config/cloudinary.js';
 const addCourse=async(req,res)=>{
     try{
         const {name,description,price,duration,language,isFree,category}=req.body
-        if(!name || !description  || !duration || !language||!category ){
+        if(name.trim()===''||description.trim()===''||duration.trim()===''||language.trim()==='' ||!category){
             // throw new Error('Enter the complete fields')
             return res.status(400).json({status:false,message:'Enter the complete fields'})
         }else{
@@ -64,13 +64,11 @@ const addCourse=async(req,res)=>{
                     course:updatedCourse
                 })
                 await uploadCourse.save()
-                console.log(uploadCourse)
                 res.status(200).json({status:true,message:'Course added successfully'})
             }
             }
         }
     }catch(err){
-        console.log(err)
         return res.status(400).json("Something went wrong")
     }
 }
@@ -79,7 +77,7 @@ const addCourse=async(req,res)=>{
 const editCourse=async(req,res)=>{
     try{
         const {name,description,category,language,duration,isFree,price,courseId}=req.body
-        if(!name ||!description||!language||!duration||!isFree){
+        if(name.trim()===''||description.trim()===''||language.trim()===''||duration.trim()===''||!isFree){
             return res.status(400).json('Fill the complete fields')
         }else{
             const coursePrice=isFree==='true'? 0 : price;
@@ -95,17 +93,20 @@ const editCourse=async(req,res)=>{
                 }
                 return assignment
             }
+            if(!req.body.course){
+                return res.status(400).json('Atleast one chapter is needed')
+            }
+                const updatedCourse=await Promise.all(req.body.course.map(async(chapter)=>{
+                    const Assignment=await updateAssignmentToCloudinary(chapter?.assignment)
+                    return{
+                        chapter:chapter.chapter,
+                        assignment:Assignment,
+                        lessons:chapter.lessons
+                    }
+                }))
+            
+            
 
-            const updatedCourse=await Promise.all(req.body.course.map(async(chapter)=>{
-                const Assignment=await updateAssignmentToCloudinary(chapter?.assignment)
-                return{
-                    chapter:chapter.chapter,
-                    assignment:Assignment,
-                    lessons:chapter.lessons
-                }
-            }))
-
-            console.log(updatedCourse)
 
             let imageUrl;
 
@@ -137,13 +138,11 @@ const editCourse=async(req,res)=>{
                 teacher:req.body.teacherId
             }
             })
-            console.log(updated)
              
             return res.status(200).json({status:true,message:'Updated Successfully'})
         }
 
     }catch(err){
-        console.log(err)
         return res.status(400).json("Something went wrong")
     }
 }
@@ -159,7 +158,6 @@ const listUnListCourse=async(req,res)=>{
           );
         return res.status(200).json('updated Successfully')
     }catch(err){
-        console.log(err)
         return res.status(400).json('something went wrong')
     }
 }
@@ -185,16 +183,18 @@ const AskQuestion=async(req,res)=>{
         const courseId=req.params.id
         const question=req.body.question
         const courseIndex=req.body.index
-        console.log(question,courseIndex)
-        const course=await Course.findOne({_id:courseId})
-        if(course){
-            course.course[courseIndex].questionsAndAnswers.push({question:question})
-
-            await course.save()
-            console.log(course.course[courseIndex].questionsAndAnswers)
-            return res.status(200).json({status:true,message:'Question added successfully'})
+        if(question.trim()===''){
+            return res.status(400).json('Enter the question')
         }else{
-            return res.staus(400).json({status:false,message:'Course not found'})
+            const course=await Course.findOne({_id:courseId})
+            if(course){
+                course.course[courseIndex].questionsAndAnswers.push({question:question})
+    
+                await course.save()
+                return res.status(200).json({status:true,message:'Question added successfully'})
+            }else{
+                return res.staus(400).json({status:false,message:'Course not found'})
+            }
         }
     }catch(err){
         return res.status(400).json('Something went wrong')
@@ -239,7 +239,6 @@ const getAllCourse=async(req,res)=>{
             return res.status(200).json({courses:courses,message:'success'})
         }
     }catch(err){
-        // console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }

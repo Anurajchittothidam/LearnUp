@@ -38,6 +38,31 @@ function EditProfile() {
         })
     },[])
 
+    function validate(formData){
+      if(formData.name.trim()!==""){
+        if(formData.email.trim().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+          if(formData.phoneNumber.trim().match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/)){
+            if(formData.about.trim()!==""){
+              if(formData.place.trim()!==""){
+               return true
+              }else{
+               toast.error('Enter the place')
+              }
+            }else{
+             toast.error('Enter something about you')
+            }
+          }else{
+           toast.error('Phone number is not valid')
+          }
+        }else{
+         toast.error('Email required')
+        }
+      }else{
+       toast.error('Name required')
+      }
+      return false
+    }
+
     function changeInput(e){
         const {name,value}=e.target
         setFormData((prevstate)=>({
@@ -48,15 +73,16 @@ function EditProfile() {
 
     function handleSubmit(e){
       e.preventDefault()
-      setIsLoading(true)
-        console.log('dfs')
+      if(validate(formData)){
+        setIsLoading(true)
         teacherEditProfile(formData).then((res)=>{
             navigate('/teachers/profile')
         }).catch((err)=>{
-          toast.error(err)
+          toast.error(err.response.data)
         }).finally(()=>{
           setIsLoading(false)
         })
+      }
     }
 
   return (

@@ -51,7 +51,6 @@ export const editCategory=({name,id})=>{
 }
 
 export const verifyTeacher=(id)=>{
-    console.log(id)
     return axios('adminJwtToken').patch('/admin/verifyTeacher',{id})
 }
 
@@ -59,3 +58,6 @@ export const getAdminDashboard=()=>{
     return axios('adminJwtToken').get('/admin/dashboard')
 }
 
+export const getTeacherReport=()=>{
+    return axios('adminJwtToken').get('/admin/getTeacherReport')
+}

@@ -75,11 +75,14 @@ function Category() {
   }
 
   function addCategory(e){
+    if(category.trim()===''){
+      toast.error('Enter the category')
+    }else{
     setIsLoading(true)
     addCategories(e).then((res)=>{
-      console.log(res)
       toast.success(res.message)
       setAddCategoryPopUp(false)
+      setCategory('')
       // navigate('/admin/categories')
     }).catch((err)=>{
       toast.error(err)
@@ -87,8 +90,12 @@ function Category() {
       setIsLoading(false)
     })
   }
+  }
 
   function editCategories(e){
+    if(category.trim()===''){
+      toast.error('Enter the new Category name')
+    }else{
     setIsLoading(true)
     editCategory(e).then((res)=>{
       categories.map((obj)=>{
@@ -96,12 +103,14 @@ function Category() {
           obj.name=e.name
         }
       })
+      setCategory('')
     }).catch((err)=>{
       toast.error(err)
+      setCategory('')
     }).finally(()=>{
       setIsLoading(false)
     })
-
+  }
   }
   return (
     <>

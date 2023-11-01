@@ -65,6 +65,36 @@ const courseSchema=mongoose.Schema({
             ]
         }
     ],
+    reviews:[
+        {
+            user:{
+                type:mongoose.Types.ObjectId,
+                ref:'users',
+                required:true,
+            },
+            text:{
+                type:String,
+                required:true,
+            },
+            rating:{
+                type:Number,
+                // required:true,
+            }
+        }
+    ],
+    report:[
+        {
+        user:{
+            type:mongoose.Types.ObjectId,
+            ref:'users',
+            required:true,
+        },
+        reason:{
+            type:String,
+            required:true,
+        }
+        }
+    ],
     // entrolled:[
     //     {
     //         type:mongoose.Schema.Types.ObjectId,

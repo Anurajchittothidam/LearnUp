@@ -45,7 +45,7 @@ function QuestionCard({ index, courseDetails }) {
         Questions and Answers
       </h3>
       {/* You can open the modal using ID.showModal() method */}
-      <button type="button" className="btn" onClick={() => window.my_modal_3.showModal()}>
+      <button type="button" className="btn p-2 bg-gray-200 rounded" onClick={() => window.my_modal_3.showModal()}>
         Ask Question
        </button>
        </div>
@@ -141,7 +141,7 @@ id="my_modal_3"
              <button
                onClick={handleSubmit}
                type="button"
-               className=" form-btn mt-2 font-medium rounded  "
+               className=" form-btn mt-2 font-medium bg-blue-500 p-2 rounded disabled:bg-gray-400 "
                disabled={!validForm()}
              >
                <span className="txt">Submit</span>

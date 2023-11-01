@@ -18,6 +18,31 @@ function Signup(props) {
     role: "teacher",
   });
 
+  function validate(formData){
+    if(formData.name.trim()!==""){
+      if(formData.email.trim().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+        if(formData.phoneNumber.trim().match(/^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/)){
+          if(formData.password.trim()!==""){
+            if(formData.confirmPassword.trim()===formData.password.trim()){
+             return true
+            }else{
+             toast.error('Confirm Password not match')
+            }
+          }else{
+           toast.error('Password required')
+          }
+        }else{
+         toast.error('Phone number is not valid')
+        }
+      }else{
+       toast.error('Email required')
+      }
+    }else{
+     toast.error('Name required')
+    }
+    return false
+  }
+
   useEffect(() => {
     if (props.data === "teacher") {
       authTeacher()
@@ -47,32 +72,32 @@ function Signup(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(props.data);
-    setIsLoading(true);
     if (props.data === "teacher") {
-      console.log("dfs");
+      if(validate(formData)){
+      setIsLoading(true);
       teacherSignup(formData)
         .then((res) => {
           navigate("/teachers/otp");
         })
         .catch((err) => {
-          toast.error(err);
+          toast.error(err.response.data);
         })
         .finally(() => {
           setIsLoading(false);
-        });
+        })};
     } else {
+      if(validate(formData)){
       addTeachers(formData)
         .then((res) => {
           navigate("/admin/teachers/otp");
         })
         .catch((err) => {
-          console.log(err);
-          toast.error(err);
+          toast.error(err.response.data);
         })
         .finally(() => {
           setIsLoading(false);
         });
+      }
     }
   }
 

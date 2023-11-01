@@ -11,15 +11,18 @@ import Stripe from "stripe";
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const CheckOut = async (req, res) => {
-    const { userId } = req.body;
+    // const { userId } = req.body;
+    const userId=req.userId
     let courseId=req.body?.courseId||''
     const cartData=req.body?.cartData
     let courseIds=[]
     let teacherIdSet=new Set()
     let teacherId;
     let total=0;
-    // console.log('courseId',courseId,'cartData',cartData,userId)
   try {
+    if(req.body.address.trim()===''||req.body.pincode.trim()===''){
+      return res.status(400).json('Fill the addess and Pincode')
+    }else{
     const user = await users.findById(userId);
     if (user.block === false) {
       let course
@@ -37,29 +40,28 @@ const CheckOut = async (req, res) => {
       if (!course && !cartData) {
         return res.status(400).json("This couser is unlisted");
       } else if(course) {
-        console.log(courseId)
         if (course.isFree) {
-          const order =await Order.create({
-            total: course.price,
-            user: userId,
-            teacher: course.teacher,
-            course: courseId,
-            address: { line: req.body.address, pincode: req.body.pincode },
-            status: true,
-            purchase_date: Date.now(),
-          });
-          console.log('order',order)
-          if (order) {
-            return res
-              .status(200)
-              .json({ message: "Order placed successfully", status: true,orderId:order._id });
-          } else {
-            return res
-              .status(500)
-              .json({ message: "OrderFailed", status: false });
+         
+            const order =await Order.create({
+              total: course.price,
+              user: userId,
+              teacher: course.teacher,
+              course: courseId,
+              address: { line: req.body.address, pincode: req.body.pincode },
+              status: true,
+              purchase_date: Date.now(),
+            });
+            if (order) {
+              return res
+                .status(200)
+                .json({ message: "Order placed successfully", status: true,orderId:order._id });
+            } else {
+              return res
+                .status(500)
+                .json({ message: "OrderFailed", status: false });
+            }
           }
-        } else {
-        console.log(courseId)
+          
           // Creating New Order with user , tutor , and course Details
           const newOrder = new Order({
             total: course.price,
@@ -72,7 +74,6 @@ const CheckOut = async (req, res) => {
           newOrder
             .save()
             .then(async (orderResponse) => {
-              console.log("orderResp id", orderResponse._id);
               //Creating stripe checkout session with payment details
               const session = await stripe.checkout.sessions.create({
                 line_items: [
@@ -101,17 +102,14 @@ const CheckOut = async (req, res) => {
               res.json({ url: session.url, orderId: orderResponse._id });
             })
             .catch((err) => {
-              console.log(err);
               // res.status(500).json({ status: false, message: "Internal server error" });
               res.redirect(
                 `${process.env.CLIENTSIDE_URL}/course-payment/${courseId}`
               );
             });
-        }
       }else{
   // Creating New Order with user , tutor , and course Details
   const courseDetails=await courses.find({_id:courseIds})
-  console.log('courseDetails',courseDetails)
   
     const line_items=courseDetails.map((courses)=>{
      return {
@@ -139,7 +137,6 @@ const CheckOut = async (req, res) => {
   newOrder
     .save()
     .then(async (orderResponse) => {
-      console.log("orderResp id", orderResponse._id);
    
       //Creating stripe checkout session with payment details
       const session = await stripe.checkout.sessions.create({
@@ -155,7 +152,6 @@ const CheckOut = async (req, res) => {
       res.json({ url: session.url, orderId: orderResponse._id });
     })
     .catch((err) => {
-      console.log(err);
       // res.status(500).json({ status: false, message: "Internal server error" });
       res.redirect(
         `${process.env.CLIENTSIDE_URL}/course-payment/${courseId}`
@@ -166,8 +162,8 @@ const CheckOut = async (req, res) => {
         res.redirect(`${process.env.CLIENTSIDE_URL}/course-payment/${courseId}`)
     //   return res.status(400).json("Your account is blocked");
     }
+  }
   } catch (err) {
-    console.log(err)
     res.redirect(`${process.env.CLIENTSIDE_URL}/course-payment/${courseId}`)
     // return res.status(400).json("something went wrong");
   }
@@ -177,7 +173,6 @@ const verifyPayment=async(req,res)=>{
     try{
         Order.findByIdAndUpdate({_id:req.params.orderId},{$set:{status:true}}).then(async(response)=>{
             if(response){
-              console.log(response.course)
               const remove=await Cart.deleteMany({course:response.course})
                 res.redirect(`${process.env.CLIENTSIDE_URL}/order-success/`)
                 // return res.status(200).json({status:true,message:'Payment successfull'})
@@ -186,13 +181,11 @@ const verifyPayment=async(req,res)=>{
                 // return res.status(400).json('Payment failed')
             }
         }).catch((err)=>{
-            console.log(err)
             res.redirect(`${process.env.CLIENTSIDE_URL}/course-payment/${response.course}`)
             // return res.status(400).json('Something went wrong')
         })
 
     }catch(err){
-        console.log(err)
         res.redirect(`${process.env.CLIENTSIDE_URL}/course-payment/${response.course}`)
         // res.status(400).json('Something went wrong')
     }
@@ -208,7 +201,6 @@ const cancelPayment=(req,res)=>{
             }
         })
     }catch(err){
-        console.log(err)
         // res.redirect(`${process.env.CLIENTSIDE_URL}/course-payment/${response.course}`)
         res.status(400).json('Something went wrong')
     }

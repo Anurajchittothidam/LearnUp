@@ -44,7 +44,20 @@ const userSchema=new mongoose.Schema({
     verify:{
         type:Boolean,
         default:false,
-    }
+    },
+    report:[
+        {
+        user:{
+            type:mongoose.Types.ObjectId,
+            ref:'users',
+            required:true,
+        },
+        reason:{
+            type:String,
+            required:true,
+        }
+        }
+    ],
 },{
     timestamps:true
 })

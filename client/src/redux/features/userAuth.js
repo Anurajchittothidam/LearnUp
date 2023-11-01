@@ -13,7 +13,6 @@ export const userAuth=createSlice({
     },
     reducers:{
         setUserLogin:(state,action)=>{
-            console.log('setUserLogin',action.payload)
             state.email=action.payload.email,
             state.name=action.payload.name,
             state.id=action.payload._id?action.payload._id:action.payload.id,
@@ -32,7 +31,6 @@ export const userAuth=createSlice({
     }
 })
 
-console.log('user',userAuth)
 
 export const {setUserLogin,setUserSignOut} =userAuth.actions
 export default userAuth.reducer

@@ -5,9 +5,11 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { editCourse, getCategory, getCourse } from "../../services/teacherApi";
+import { deleteVideo, editCourse, getCategory, getCourse } from "../../services/teacherApi";
 import Navbar from "./teacherNav/Navbar";
 import Sidebar from "./teacherSideBar/Sidebar";
+import axiosInstance from "../../axios/axiosTeacher";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 function EditCourse() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +26,7 @@ function EditCourse() {
   const [image, setImage] = useState("");
   const teacherId = useSelector((state) => state.teacher.id);
   const params = useParams();
+  const [percent,setPercent]=useState(null)
   const courseId = params.id;
 
 
@@ -69,16 +72,6 @@ function EditCourse() {
     duration: Yup.string().required("Duration Required"),
     language: Yup.string().required("Language Required"),
     description: Yup.string().required("Description Required"),
-    // price: Yup.string().required("Price Required"),
-    // price: Yup.string().when("isFree", {
-    // is: false,
-    // then: Yup.string().required("Price Required"),
-    // }),
-    // price: Yup.mixed().when(['isFree', 'duration'], {
-    //   is: (isFree) => !isFree,
-    //   then: Yup.number().required("Price Required").typeError("Price must be a number"),
-    //   otherwise: Yup.mixed().nullable(),
-    // }),
   });
 
   const formikSubmit=()=>{
@@ -146,13 +139,33 @@ function EditCourse() {
     lessonName: Yup.string().required("Lesson Name is Required"),
     videoUrl: Yup.string()
       .required("(Video Link Required")
-      .matches(
-        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/,
-        "Invalid YouTube link"
-      ),
+      ,
   });
 
+
+  const handleVideo=(e,action)=>{
+    const formData=new FormData()
+    formData.append('video',e.target.files[0])
+    axiosInstance('teacherJwtToken').put('/teacher/uploadVideo',formData,{
+      onUploadProgress:(p)=>{
+          const percentComplete=Math.round(p.loaded*100/p.total)
+          setPercent({fileName:e.target.files[0].name,percentComplete})
+      },
+      headers:{
+      'Content-Type': 'multipart/form-data',
+  }}).then(async(res)=>{
+      if(action==='edit'){
+        EditLessonFormik.setFieldValue('videoUrl',res.data.url)
+      }else{
+      lessonFormik.setFieldValue('videoUrl',res.data.url)
+      }
+    }).catch((err)=>{
+      console.log(err)
+    })
+  }
+
   const lessonFormik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       chapterName: "",
       lessonName: "",
@@ -162,9 +175,9 @@ function EditCourse() {
     validationSchema: validateLesson,
     // Handling submition
     onSubmit: (values) => {
-      console.log("values", values);
       setLesson([...lesson, values]);
       console.log("lesson Submit ", lesson);
+      setPercent(null)
       // After setting the lesson the lessoName field value will be cleared
       lessonFormik.setFieldValue("lessonName", "");
       // clearing the vedioUrl field
@@ -220,6 +233,11 @@ function EditCourse() {
           : chapterDetails?.assignment,
         lessons: [...chapterDetails.lessons, values],
       });
+      setPercent(null)
+      // After setting the lesson the lessoName field value will be cleared
+      EditLessonFormik.setFieldValue("lessonName", "");
+      // clearing the vedioUrl field
+      EditLessonFormik.setFieldValue("videoUrl", "");
     },
   });
 
@@ -274,14 +292,19 @@ function EditCourse() {
   };
 
 
-  const handleDeleteLesson = (indexId) => {
+  const handleDeleteLesson = async(indexId) => {
     let updateLesson = chapterDetails.lessons.filter(
       (obj, index) => indexId != index
     );
-    setChapterDetails({
-      chapter: chapterDetails.chapter,
-      lessons: updateLesson,
-    });
+    deleteVideo(chapterDetails?.lessons[indexId].videoUrl).then((res)=>{
+      setChapterDetails({
+        chapter: chapterDetails.chapter,
+        lessons: updateLesson,
+      });
+    }).catch((err)=>{
+      console.log(err)
+    })
+    
     // Swal.fire({
     //   title: "Are you sure?",
     //   text: "Are you sure you want to Delete!",
@@ -298,7 +321,6 @@ function EditCourse() {
   };
 
   const successMessage = (message) => {
-    console.log(message)
     toast.success(message, {
       position: "top-center",
     });
@@ -794,16 +816,22 @@ function EditCourse() {
                   </label>
                 </div>
                 <div className="relative mb-3 w-full sm:w-1/2   m-3">
-                  <input
-                    type="text"
-                    name="videoUrl"
+                {/* <label
+                    htmlFor="videoUrl"
+                    className={`pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-500 transition-all duration-200 ease-out`}
+                  >
+                    Video Link
+                  </label> */}
+                <input
+                    type="file"
+                    name="video"
                     onChange={(e) => {
-                      handleLessonChange(e);
+                      handleVideo(e,'add');
                     }}
-                    value={lessonFormik.values.videoUrl}
+                    // value={lessonFormik.values.videoUrl}
                     className="peer block min-h-[auto] w-full rounded border-gray-300  bg-transparent py-[0.32rem] px-3 leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                     id="videoUrl"
-                    placeholder="Video Url"
+                    // placeholder="Video Url"
                   />
                   {lessonFormik.touched.videoUrl &&
                   lessonFormik.errors.videoUrl ? (
@@ -812,16 +840,7 @@ function EditCourse() {
                     </p>
                   ) : null}
 
-                  <label
-                    htmlFor="videoUrl"
-                    className={`pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-500 transition-all duration-200 ease-out ${
-                      lessonFormik.values.videoUrl
-                        ? "-translate-y-[1.7rem] scale-[0.8] text-primary"
-                        : ""
-                    } `}
-                  >
-                    Video Link
-                  </label>
+                 
                 </div>
                 <div className="relative mb-3 w-full md:w-1/3 m-3">
                   <button
@@ -850,6 +869,18 @@ function EditCourse() {
               />
 
              </div> 
+             {percent&&(
+                <div>
+                  <div className="flex flex-wrap">
+                    <h1>Percentage</h1>
+                    <p>{percent.fileName}</p>
+                  </div>
+                    <ProgressBar
+                      completed={percent.percentComplete}
+                      bgColor='blue'
+                    />
+                  </div>
+              )}
 
               {lesson[0] ? (
                 <div>
@@ -983,16 +1014,16 @@ function EditCourse() {
                   </label>
                 </div>
                 <div className="relative mb-3 w-full sm:w-1/2   m-3">
-                  <input
-                    type="text"
-                    name="videoUrl"
+                <input
+                    type="file"
+                    name="video"
                     onChange={(e) => {
-                      handleEditLessonChange(e);
+                      handleVideo(e,'edit');
                     }}
-                    value={EditLessonFormik.values.videoUrl}
+                    // value={lessonFormik.values.videoUrl}
                     className="peer block min-h-[auto] w-full rounded border-gray-300  bg-transparent py-[0.32rem] px-3 leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
                     id="videoUrl"
-                    placeholder="Video Url"
+                    // placeholder="Video Url"
                   />
                   {EditLessonFormik.touched.videoUrl &&
                   EditLessonFormik.errors.videoUrl ? (
@@ -1001,16 +1032,12 @@ function EditCourse() {
                     </p>
                   ) : null}
 
-                  <label
+                  {/* <label
                     htmlFor="videoUrl"
-                    className={`pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-500 transition-all duration-200 ease-out ${
-                      EditLessonFormik.values.videoUrl
-                        ? "-translate-y-[1.7rem] scale-[0.8] text-primary"
-                        : ""
-                    } `}
+                    className={`pointer-events-none absolute top-0 left-3 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[2.15] text-neutral-500 transition-all duration-200 ease-out `}
                   >
                     Video Link
-                  </label>
+                  </label> */}
                 </div>
                 <div className="relative mb-3 w-full md:w-1/3 m-3">
                   <button
@@ -1045,6 +1072,19 @@ function EditCourse() {
                   onChange={handleAssignment}
                 />
               </div>
+
+              {percent&&(
+                <div>
+                  <div className="flex flex-wrap">
+                    <h1>Percentage</h1>
+                    <p>{percent.fileName}</p>
+                  </div>
+                    <ProgressBar
+                      completed={percent.percentComplete}
+                      bgColor='blue'
+                    />
+                  </div>
+              )}
 
               <div>
                 <div>

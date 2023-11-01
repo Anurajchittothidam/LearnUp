@@ -9,6 +9,7 @@ import Categories from '../pages/adminSide/categories.jsx'
 import Signup from '../components/SignUp/Signup.jsx'
 import Otp from '../components/OTP/Otp'
 import PrivateRoute from '../util/PrivetRoutes.jsx'
+import Reports from '../components/adminComponents/Reports/Reports.jsx'
 
 function AdminComponents() {
   return (
@@ -20,6 +21,7 @@ function AdminComponents() {
         <Route path='/teachers/add' element={<Signup data={'admin'}/>}></Route>
         <Route path='/teachers/otp' element={<Otp data={'admin'}/>}></Route>
         <Route path='/categories' element={<Categories/>}></Route>
+        <Route path='/reports' element={<Reports/>}></Route>
       </Route>
        
         <Route path='/*' element={<Error/>}></Route>

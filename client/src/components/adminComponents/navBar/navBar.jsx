@@ -96,12 +96,12 @@ function NavBar() {
                   )}   
             </button>
             <a href="#" className="text-xl font-bold flex items-center lg:ml-2.5">
-              <img
+              {/* <img
                 src="https://demo.themesberg.com/windster/images/logo.svg"
                 className="h-6 mr-2"
                 alt="Windster Logo"
-              />
-              <span className="self-center whitespace-nowrap">Windster</span>
+              /> */}
+              <span className="self-center whitespace-nowrap">Learn Up</span>
             </a>
             <form action="#" method="GET" className="hidden lg:block lg:pl-32">
               <label htmlFor="topbar-search" className="sr-only">

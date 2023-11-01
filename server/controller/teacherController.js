@@ -41,7 +41,7 @@ const s3 = new AWS.S3({
 const teacherLogin=async(req,res)=>{
     try{
         const {email,password}=req.body
-        if(!email || !password){
+        if(email.trim()==="" || password.trim()===''){
             return res.status(400).json('Fill all the fields')
         }else{
             const teacherExist=await users.findOne({email,role:'teachers'})
@@ -63,31 +63,34 @@ const teacherLogin=async(req,res)=>{
             }
         }
     }catch(err){
-        console.log(err)
         res.status(500).json('Something went wrong')
     }
 }
 
 const verifyOtp=async (req,res)=>{
     try{
-        const verified=verifyOTP(req.body.otp)
-        if(verified){
-        const {email,password,phoneNumber,name}=userDetails
-                const hash=await bcrypt.hash(password,10)
-                const newTeacher=new users({
-                    name,
-                    email,
-                    phoneNumber,
-                    password:hash,
-                    role:'teachers'
-                })
-                newTeacher.save().then((teacher)=>{
-                    return res.status(200).json(teacher)
-                }).catch((err)=>{
-                    return res.status(400).json(err.message)
-                })
+        if(!req.body.otp){
+            return res.status(400).json('Fill the otp')
         }else{
-            return res.status(400).json('Otp does not match')
+            const verified=verifyOTP(req.body.otp)
+            if(verified){
+            const {email,password,phoneNumber,name}=userDetails
+                    const hash=await bcrypt.hash(password,10)
+                    const newTeacher=new users({
+                        name,
+                        email,
+                        phoneNumber,
+                        password:hash,
+                        role:'teachers'
+                    })
+                    newTeacher.save().then((teacher)=>{
+                        return res.status(200).json(teacher)
+                    }).catch((err)=>{
+                        return res.status(400).json(err.message)
+                    })
+            }else{
+                return res.status(400).json('Otp does not match')
+            }
         }
         
     }catch(err){
@@ -99,7 +102,7 @@ const teacherSignup=async (req,res)=>{
     try{
         const {email,password,name,phoneNumber}=req.body
         if(req.body.action==='send'){
-            if(!email || !password || !name || !phoneNumber){
+            if(email.trim()==='' || password.trim()==='' || name.trim()==='' || phoneNumber.trim()===''){
                 return res.status(400).json('fill the complete field')
             }else{
                 const emailExist=await users.findOne({email,role:'teachers'})
@@ -176,13 +179,11 @@ const forgotPassword=async(req,res)=>{
     try{
         const {email,password}=req.body
         if(req.body.action==='send'){
-            console.log('send')
             if(!email || !password){
                 return res.status(400).json('Fill the complete field')
              }else{
                  const emailExist=await users.findOne({email,role:'teachers'})
                  if(!emailExist){
-                    console.log('dfsdf')
                      return res.status(400).json('This email not exist')
                  }else{
                      sendEmail(email).then((result)=>{
@@ -195,7 +196,6 @@ const forgotPassword=async(req,res)=>{
                  }
              }
         }else if(req.body.action==='verify'){
-            console.log('verify')
             if(!req.body.otp){
                 return res.status(400).json('Enter the otp')
             }else{
@@ -260,7 +260,6 @@ const googleAuth=(req,res)=>{
             return res.status(400).json('Some error occured with google Authentication')
         }
     }catch(err){
-        console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }
@@ -302,7 +301,6 @@ const getCategory=async(req,res)=>{
         const category=await categories.find({block:false})
         return res.status(200).json({category:category,message:'success'})
     }catch(err){
-        console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }
@@ -341,7 +339,6 @@ const getTeacher=async(req,res)=>{
             return res.status(400).json('Teacher not found')
         }
     }catch(err){
-        console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }
@@ -360,7 +357,6 @@ const uploadImage=async(req,res)=>{
             res.status(400).json('image not uploaded in the database')
         }
     }catch(err){
-        console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }
@@ -381,29 +377,40 @@ const videoUpload=async(req,res)=>{
     };
     
       s3.upload(params, function (err, data) {
-            console.log(data)
             if (err) {
                 throw err
             }
             console.log(`File uploaded successfully. 
                           ${data.Location}`);
-            return res.status(200).json({status:true,url:data.Location,message:'Video uploaded'})
+            return res.status(200).json({status:true,url:file.originalname,message:'Video uploaded'})
         })
-            // if(req.body.action==='cancel'){
-            //     const url=await S3Upload({file,action:'cancel'})
-            //     console.log('cancel',url)
-            //     return res.status(200).json({status:true,message:'Video uploading cancelled'})
-            // }else{
-                // const url=await S3Upload(file)
-                    // console.log('url',data.Location)
-                    // const corse=await Course.findOne({})
-            // }
+           
         }
     }catch(err){
         return res.status(400).json('Something went wrong')
     }
 }
 
+const deleteVideo=async(req,res)=>{
+    try{
+        const videoUrl=req.query.url
+        const params={
+            Bucket: bucketName,
+            Key:videoUrl,
+        }
+
+        s3.deleteObject(params, function (err, data) {
+            if (err) {
+                throw err
+            }
+            console.log(`File deleted successfully. 
+                          `);
+            return res.status(200).json({status:true,message:'Video deleted'})
+        })
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
 const verifyTeacherController=async(req,res)=>{
     try{
         const secret=process.env.SECRET_KEY
@@ -447,15 +454,18 @@ const replyQuestion=async(req,res)=>{
         const index=req.body.chapterIndex
         const questionIndex=req.body.questionIndex
         const answer=req.body.answer
+        if(answer.trim()===''){
+            return res.status(400).json('Fill the answer')
+        }else{
         const course=await Course.findOne({_id:courseId})
         if(course){
             course.course[index].questionsAndAnswers[questionIndex].answer=answer
             await course.save()
-            console.log(course.course[index].questionsAndAnswers[questionIndex])
             return res.status(200).json('Reply added successfully')
         }else{
             return res.status(400).json('Reply not added.')
         }
+    }
     }catch(err){
         return res.status(400).json('Something went wrong')
     }
@@ -465,7 +475,6 @@ const getAllStudents=async(req,res)=>{
     try{
         const {courseId}=req.params
         const users=await Order.find({course:courseId}).populate('user')
-        console.log(users)
         if(users){
             return res.status(200).json({users:users,message:'success'})
         }else{
@@ -515,7 +524,6 @@ const getDashboard=async(req,res)=>{
 
         const courses=await Course.find({teacher:teacherId}).count()
 
-        console.log(courses)
 
         let  revanueDetails = await Order.aggregate([
             {
@@ -572,12 +580,33 @@ const getDashboard=async(req,res)=>{
         return res.status(200).json({status:true,students,entrolledStudents,courses,revanueDetails:revanueDetails[0].data})
 
     }catch(err){
-        console.log(err)
         return res.status(400).json('Something went wrong')
     }
 }
 
 
+const reportStudent=async(req,res)=>{
+    try{
+        const {studentId,reason}=req.body
+        const userId=req.userId
+        if(reason.trim()===''){
+            return res.status(400).json('Fill the Reason')
+        }else{
+        const Data={
+            user:userId,
+            reason,
+        }
+        const update=await users.updateOne({_id:studentId},{$push:{report:Data}})
+        if(update){
+            return res.status(200).json({status:true,message:'Your report Added'})
+        }else{
+            return res.status(400).json({status:false,message:'Not submitted'})
+        }
+    }
+    }catch(err){
+        return res.status(400).json('Something went wrong')
+    }
+}
 
 
-export {teacherLogin,authTeacher,getCategory,getDashboard,videoUpload,verifyTeacherController,teacherSignup,getTeacher,getAllStudents,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}
+export {teacherLogin,authTeacher,getCategory,deleteVideo,reportStudent,getDashboard,videoUpload,verifyTeacherController,teacherSignup,getTeacher,getAllStudents,uploadImage,replyQuestion,forgotPassword,editProfile,verifyOtp,resendOtp,googleAuth}

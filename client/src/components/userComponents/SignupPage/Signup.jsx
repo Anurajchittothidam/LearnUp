@@ -15,6 +15,27 @@ function Signup() {
   })
   const [isLoading,setIsLoading]=useState(false)
 
+  function validate(formData){
+    if(formData.name.trim()!==""){
+      if(formData.email.trim().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+          if(formData.password.trim()!==""){
+            if(formData.confirmPassword.trim()===formData.password.trim()){
+             return true
+            }else{
+             toast.error('Confirm Password not match')
+            }
+          }else{
+           toast.error('Password required')
+          }
+      }else{
+       toast.error('Email required')
+      }
+    }else{
+     toast.error('Name required')
+    }
+    return false
+  }
+
   const navigate=useNavigate()
 
   function handleChange(e){
@@ -27,15 +48,16 @@ function Signup() {
 
   function handleSubmit(e){
     e.preventDefault()
-    setIsLoading(true)
-    userSignup(userDetails).then((result)=>{
-      navigate('/otp')
-    }).catch((err)=>{
-      console.log(err)
-      toast.error(err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
+    if(validate(userDetails)){
+      setIsLoading(true)
+      userSignup(userDetails).then((result)=>{
+        navigate('/otp')
+      }).catch((err)=>{
+        toast.error(err)
+      }).finally(()=>{
+        setIsLoading(false)
+      })
+    }
   }
   return (
     <>

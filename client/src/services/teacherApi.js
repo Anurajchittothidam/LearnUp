@@ -43,7 +43,6 @@ export const imageUpload=(data)=>{
 }
 
 export const videoUpload=(data)=>{
-    console.log('action',data.action)
     return axios('teacherJwtToken').put('/teacher/uploadVideo',data,{
         headers:{
         'Content-Type': 'multipart/form-data',
@@ -85,7 +84,6 @@ export const editCourse=(values,course,image,teacherId,courseId)=>{
 }
 
 export const replyQuestion=(courseId,chapterIndex,answer,questionIndex)=>{
-    console.log(questionIndex)
     return axios('teacherJwtToken').patch('/teacher/reply',{courseId,chapterIndex,answer,questionIndex})
 }
 
@@ -99,5 +97,17 @@ export const verifyTeacher=()=>{
 
 export const getTeacherDashboard=()=>{
     return axios('teacherJwtToken').get('/teacher/dashboard')
+}
+
+export const getCourseReport=()=>{
+    return axios('teacherJwtToken').get('/teacher/getCourseReport')
+}
+
+export const reportStudent=(studetId,reason)=>{
+    return axios('teacherJwtToken').put('/teacher/reportStudent',{studetId,reason})
+}
+
+export const deleteVideo=(videoUrl)=>{
+    return axios('teacherJwtToken').get(`/teacher/deleteVideo?url=${videoUrl}`)
 }
 

@@ -1,14 +1,15 @@
 import React, { useEffect,useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useNavigate } from 'react-router-dom'
 import { setTeacherDetails } from '../redux/features/teacherAuth'
-import { setUserLogin } from '../redux/features/userAuth'
+import { setUserLogin, setUserSignOut } from '../redux/features/userAuth'
 import { authAdmin } from '../services/adminApi'
 import {authTeacher} from '../services/teacherApi'
 import { userAuth } from '../services/userApi'
 
 function PrivateRoute(props) {
     const dispatch=useDispatch()
+    const navigate=useNavigate()
     const user=useSelector((state)=>state.user)
     const teacher=useSelector((state)=>state.teacher)
     const [isLoading,setIsLoading]=useState(false)
@@ -17,11 +18,15 @@ function PrivateRoute(props) {
         if(props.role==='user'){
             setIsLoading(true)
             userAuth().then((res)=>{
-                console.log(res.data)
                 dispatch(setUserLogin({...user,status:true}))
                 setAuth(true)
             }).catch((response)=>{
-                setAuth(false)
+                if(response.message==='Your accound blocked'){
+                    localStorage.removeItem("JwtToken");
+                    dispatch(setUserSignOut());
+                    navigate('/login')
+                }else{
+                setAuth(false)}
             }).finally(()=>{
                 setIsLoading(false)
             })
@@ -29,7 +34,6 @@ function PrivateRoute(props) {
             setIsLoading(true)
             authTeacher().then((res)=>{
                 dispatch(setTeacherDetails({...teacher,status:true}))
-                console.log('auth-teacher',res.data)
                 setAuth(true)
             }).catch((err)=>{
                 console.log('teacher-err',err)

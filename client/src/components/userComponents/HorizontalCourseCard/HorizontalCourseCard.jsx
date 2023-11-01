@@ -7,13 +7,11 @@ import { setCourseDetails } from '../../../redux/features/CourseRedux';
 function HorizontalCourseCard({ courseDetails }) {  
     const dispatch = useDispatch(); 
     const navigate = useNavigate();
-    // console.log(courseDetails)
     const handleClick=()=>{
         if(courseDetails?.courseInfo){
             const course = courseDetails?.courseInfo?.course.map(obj => {
                 return { ...obj, open: false };
             });
-            console.log(course)
             dispatch(setCourseDetails({ ...courseDetails,courseInfo:{...courseDetails.courseInfo}, course }))
             navigate(`/course/learn/${courseDetails.courseInfo?._id}`)
         }

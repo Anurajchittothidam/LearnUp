@@ -21,6 +21,20 @@ function Login() {
   const navigate=useNavigate()
   const dispatch=useDispatch()
 
+  function validate(userDetails){
+    if(userDetails.email.trim().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+      if(userDetails.password.trim()!==''){
+        return true
+        
+      }else{
+        toast.error('Enter the Password')
+      }
+    }else{
+      toast.error('Email is not valid')
+    }
+    return false
+  }
+
   function handleChange(e){
     const {name,value}=e.target
     setUserDetails((prev)=>({
@@ -40,41 +54,46 @@ function Login() {
   },[])
 
   function handleSubmit(){
-    setIsLoading(true)
-    userLogin(userDetails).then((result)=>{
-      localStorage.setItem('JwtToken',result?.data?.token)
-      console.log(result.data)
-      const {user,token}=result.data
-      dispatch(setUserLogin(user,token))
-      navigate('/')
-    }).catch((err)=>{
-      toast.error(err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
+    if(validate(userDetails)){
+      setIsLoading(true)
+      userLogin(userDetails).then((result)=>{
+        localStorage.setItem('JwtToken',result?.data?.token)
+        const {user,token}=result.data
+        dispatch(setUserLogin(user,token))
+        navigate('/')
+      }).catch((err)=>{
+        toast.error(err)
+      }).finally(()=>{
+        setIsLoading(false)
+      })
+    }
   }
 
   function handleForgot(){
-    setIsLoading(true)
-    forgotPassword(userDetails).then((res)=>{
-      console.log(res)
-      if(res.status){
-        navigate('/user-forgot/otp')
+    if(validate(userDetails)){
+      if(userDetails.confirmPassword.trim()===userDetails.password.trim()){
+        setIsLoading(true)
+        forgotPassword(userDetails).then((res)=>{
+          if(res.status){
+            navigate('/user-forgot/otp')
+          }else{
+            toast.error(res.message)
+          }
+        }).catch((err)=>{
+          toast.error(err)
+        }).finally(()=>{
+          setIsLoading(false)
+        })
       }else{
-        toast.error(res.message)
+        toast.error('Confirm password is not matching')
       }
-    }).catch((err)=>{
-      toast.error(err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
+    }
   }
 
   const login = useGoogleLogin({
     onSuccess: tokenResponse => {
       googleAuth(tokenResponse).then((res)=>{
         if(res){
-          console.log('login',res.data.token)
           localStorage.setItem('JwtToken',res?.data?.token)
       const {user,token}=res.data
       const data={...user,token:token}

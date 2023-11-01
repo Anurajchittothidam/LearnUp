@@ -21,7 +21,6 @@ function Courses() {
         courseList(id).then((res)=>{
             if(res.data.status===false){
                //  toast.error(res.data.message)
-                console.log(courseData)
             }else{
             // toast.success(res.data.message)
             setData(res.data.courses)
@@ -61,7 +60,6 @@ function Courses() {
                obj.block=true
             }
          })
-         console.log(res.data)
       }).catch((err)=>{
          console.log(err)
       }).finally(()=>{
@@ -103,7 +101,6 @@ function Courses() {
                 <tr class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
                   <th class="px-4 py-3">Name</th>
                   <th class="px-4 py-3">Category</th>
-                  <th class="px-4 py-3">Students <br/> Entrolled</th>
                   <th class="px-4 py-3">Price</th>
                   <th class="px-4 py-3">Actions</th>
                 </tr>
@@ -123,16 +120,16 @@ function Courses() {
                           </div>
                         </td>
                         <td class="px-4 py-3 text-ms font-semibold border">{result?.category}</td>
-                        <td class="px-4 py-3 text-ms font-semibold border">{(result?.entrolled).length}</td>
+                        {/* <td class="px-4 py-3 text-ms font-semibold border">{(result?.entrolled).length}</td> */}
                         <td class="px-4 py-3 text-ms font-semibold border">{result?.price}</td>
                         <td class="px-4 py-3 text-xs border">
                            <button onClick={()=>{navigate(`/teachers/editCourse/${result?._id}`)
                            dispatch(setCourseDetails(result))}
                         } className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Edit</button>
                            {result?.block===false ? (
-                           <button onClick={()=>unlistCourse(result?._id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded mx-2">Unlist</button>
+                           <button onClick={()=>unlistCourse(result?._id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-red-500 rounded ms-4">Unlist</button>
                            ):(
-                              <button onClick={()=>handleUnlist(result?._id,'list')} className="bg-green-500 hover:bg-gree-700 text-white font-bold py-1 px-2 border border-green-500 rounded mx-2">List</button>
+                              <button onClick={()=>handleUnlist(result?._id,'list')} className="bg-green-500 hover:bg-gree-700 text-white font-bold py-2 px-4 border border-green-500 rounded ms-2">List</button>
                            )}
                         </td>
                       </tr>

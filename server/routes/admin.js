@@ -1,5 +1,5 @@
 import express from 'express'
-import { addCategory,authAdmin, addTeachers, adminLogin, blockUnblockCategory,verifyTeacher, blockUnblockUser, editCategory, getAllCategories, getAllTeachers, getAllUsers, resendOtp, getDashboard } from '../controller/adminController.js'
+import { addCategory,authAdmin, addTeachers, adminLogin, blockUnblockCategory,verifyTeacher, blockUnblockUser, editCategory, getAllCategories, getAllTeachers, getAllUsers, resendOtp, getDashboard, getTeacherReports } from '../controller/adminController.js'
 import verifyAdmin from '../middlewares/adminAuth.js'
 import {validateId} from '../middlewares/validateParams.js'
 const router=express.Router()
@@ -33,6 +33,8 @@ router.patch('/categories/:id',validateId,blockUnblockCategory)
 router.patch('/verifyTeacher',verifyTeacher)
 
 router.get('/dashboard',getDashboard)
+
+router.get('/getTeacherReport',getTeacherReports)
 
 
 export default router

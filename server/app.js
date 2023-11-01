@@ -7,9 +7,12 @@ import userRouter from './routes/user.js'
 import adminRouter from './routes/admin.js'
 import teacherRouter from './routes/teacher.js'
 import dotenv from 'dotenv'
+import socketApi from './socket/soket.js'
 dotenv.config()
 
-app.listen(8000,()=>{
+const port=process.env.PORT || 8000
+
+const server=app.listen(port,()=>{
     console.log('port connected to 8000')
 })
 app.use(cors({
@@ -49,4 +52,8 @@ mongoose.connect(process.env.DATABASE).then(()=>{
 })
 
 
-
+socketApi.io.attach(server,{
+    cors:{
+        origin:'*'
+    }
+})

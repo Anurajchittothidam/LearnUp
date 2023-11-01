@@ -15,7 +15,6 @@ const verifyTeacher = async (req, res, next) => {
         } else {
           //finding teacher with decoded id
           const Teacher = await users.findById(decoded.id);
-          console.log(Teacher)
           if (Teacher) {
             if (Teacher.block === true) {
               return res
@@ -32,7 +31,6 @@ const verifyTeacher = async (req, res, next) => {
               } else {
                 // if user exist passing the user id with the request
                 req.teacherId = decoded.id;
-                console.log(req.teacherId);
                 next();
               }
             }

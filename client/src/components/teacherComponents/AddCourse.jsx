@@ -48,16 +48,7 @@ function AddCourse() {
     duration: Yup.string().required("Duration Required"),
     language: Yup.string().required("Language Required"),
     description: Yup.string().required("Description Required"),
-    // price: Yup.string().required("Price Required"),
-    // price: Yup.string().when("isFree", {
-    // is: false,
-    // then: Yup.string().required("Price Required"),
-  // }),
-  // price: Yup.mixed().when(['isFree', 'duration'], {
-  //   is: (isFree) => !isFree,
-  //   then: Yup.number().required("Price Required").typeError("Price must be a number"),
-  //   otherwise: Yup.mixed().nullable(),
-  // }),
+    
   });
 
   const handleVideoChange=(e)=>{setVideoFile(e.target.files[0]),
@@ -66,17 +57,7 @@ function AddCourse() {
 
  
 
-  // const handleVideoCancel=()=>{
-  //   const action='cancel'
-  //   const formData=new FormData()
-  //   formData.append('action',action)
-  //   formData.append('video',videoFile)
-  //   videoUpload(formData).then((res)=>{
-  //     setPercent(null)
-  //   }).catch((err)=>{
-  //     console.log(err)
-  //   })
-  // }
+
 
   const formikSubmit=()=>{
     if(course.length===0){
@@ -116,7 +97,6 @@ function AddCourse() {
             }
           })
           .catch((err) => {
-            console.log(err.response.data.message);
             toast.error(err.response.data.message)
             // generateErrror("Network error");
           })
@@ -156,7 +136,6 @@ function AddCourse() {
     validationSchema: validateLesson,
     // Handling submition
     onSubmit: (values) => {
-      console.log("values", values);
       setLesson([...lesson, values]);
       console.log("lesson Submit ", lesson);
       // After setting the lesson the lessoName field value will be cleared
@@ -208,7 +187,6 @@ function AddCourse() {
       headers:{
       'Content-Type': 'multipart/form-data',
   }}).then(async(res)=>{
-      console.log(res.data)
       lessonFormik.setFieldValue('videoUrl',res.data.url)
     }).catch((err)=>{
       console.log(err)

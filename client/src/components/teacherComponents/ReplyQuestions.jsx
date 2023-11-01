@@ -16,7 +16,6 @@ function ReplyQuestions() {
     useEffect(()=>{
         getCourse(courseId)
       .then((res) => {
-        console.log(res.data)
         setCourse(res?.data?.course)
       })
       .catch((err) => {

@@ -30,8 +30,6 @@ function Cart() {
             if(res.data.status===true){
                 setCourse((courseDetails.filter((courses)=>courses.course._id!==courseId)))
                 total=0
-            }else{
-                console.log(res.data)
             }
         }).catch((err)=>{
             console.log(err)

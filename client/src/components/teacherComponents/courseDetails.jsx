@@ -3,8 +3,6 @@ import { useParams } from "react-router-dom";
 import { getCourse, getReviews } from "../../services/userApi";
 import BuyNowCard from "./BuynowCard/BynowCard";
 import {Rating} from '@material-tailwind/react'
-import Navbar from "./Navbar";
-import SyllabusDropdown from "./SyllabusDropDown/SyllabusDropDown";
 
 function CourseDetails() {
   const [courseDetails, setCourse] = useState([]);

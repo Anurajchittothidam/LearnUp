@@ -1,6 +1,6 @@
 import users from '../models/userSchema.js'
-import teachers from '../models/teacherSchema.js'
 import categories from '../models/categorySchema.js'
+import Course from '../models/courseSchema.js'
 import jwt from 'jsonwebtoken'
 import course from '../models/courseSchema.js'
 import Order from '../models/orderSchema.js'
@@ -206,14 +206,12 @@ const resendOtp=(req,res)=>{
 const getAllCategories=async(req,res)=>{
     try{
         const categoryList=await categories.find()
-        console.log(categoryList)
         if(categoryList.length===0){
             return res.status(400).json('No category found')
         }else{
             return res.status(200).json(categoryList)
         }
     }catch(err){
-        console.log(err)
         res.status(400).json('Something went wrong')
     }
 }
@@ -276,7 +274,6 @@ const verifyTeacher=async(req,res)=>{
     try{
         const id=new mongoose.Types.ObjectId(req.body.id)
         const teacher=await users.findOne({_id:id})
-        console.log(teacher)
         if(teacher.verify===false){
             users.updateOne({_id:id},{$set:{verify:true}}).then((response)=>{
                 return res.status(200).json('Teacher Verified')
@@ -345,4 +342,136 @@ const getDashboard=async(req,res)=>{
     }
 }
 
-export {adminLogin,authAdmin,blockUnblockUser,getAllUsers,verifyTeacher,getDashboard,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}
+const getTeacherReports=async(req,res)=>{
+    try{
+        const reports = await users.aggregate([
+            {
+              $match: {
+                role: 'teachers',
+                block:false,
+                'report.0': { $exists: true }
+              }
+            },
+            {
+              $unwind: '$report'
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'report.user',
+                foreignField: '_id',
+                as: 'report.userInfo'
+              }
+            },
+            {
+              $unwind: '$report.userInfo'
+            },
+            {
+              $group: {
+                _id: '$_id',
+                teacherName: { $first: '$name' },
+                reportDetails: { $push: '$report' }
+              }
+            },
+            {
+              $unwind: '$reportDetails'
+            },
+            {
+              $project: {
+                reason: '$reportDetails.reason',
+                user: '$reportDetails.userInfo.name',
+                teacherName: 1
+              }
+            }
+          ]);
+
+          const studentReports = await users.aggregate([
+            {
+              $match: {
+                role: 'users',
+                block:false,
+                'report.0': { $exists: true }
+              }
+            },
+            {
+              $unwind: '$report'
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'report.user',
+                foreignField: '_id',
+                as: 'report.userInfo'
+              }
+            },
+            {
+              $unwind: '$report.userInfo'
+            },
+            {
+              $group: {
+                _id: '$_id',
+                studentName: { $first: '$name' },
+                reportDetails: { $push: '$report' }
+              }
+            },
+            {
+              $unwind: '$reportDetails'
+            },
+            {
+              $project: {
+                reason: '$reportDetails.reason',
+                user: '$reportDetails.userInfo.name',
+                studentName: 1
+              }
+            }
+          ]);
+
+          const courseReports = await Course.aggregate([
+            {
+              $match: {
+                block:false,
+                'report.0': { $exists: true }
+              }
+            },
+            {
+              $unwind: '$report'
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'report.user',
+                foreignField: '_id',
+                as: 'report.userInfo'
+              }
+            },
+            {
+              $unwind: '$report.userInfo'
+            },
+            {
+              $group: {
+                _id: '$_id',
+                courseName: { $first: '$name' },
+                reportDetails: { $push: '$report' }
+              }
+            },
+            {
+              $unwind: '$reportDetails'
+            },
+            {
+              $project: {
+                reason: '$reportDetails.reason',
+                user: '$reportDetails.userInfo.name',
+                courseName: 1
+              }
+            }
+          ]);
+          
+          
+          
+        return res.status(200).json({status:true,teacherReports:reports,courseReports:courseReports,studentReports:studentReports})
+    }catch(err){
+        return res.status(400).json("something went wrong")
+    }
+}
+
+export {adminLogin,authAdmin,blockUnblockUser,getAllUsers,verifyTeacher,getDashboard,getTeacherReports,getAllTeachers,addTeachers,resendOtp,getAllCategories,addCategory,blockUnblockCategory,editCategory}

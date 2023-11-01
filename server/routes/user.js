@@ -1,6 +1,6 @@
 import express from 'express'
 const router=express.Router()
-import { userLogin, userSignup, forgotPassword, resendOtp,getCart,removeCart, googleAuth, userAuth,getUser,addToCart, getAllCourse,getCourse,getEntrolled,imageUpload, editProfile} from '../controller/userController.js'
+import { userLogin, userSignup, forgotPassword, resendOtp,getCart,removeCart, googleAuth, userAuth,getUser,addToCart, getAllCourse,getCourse,getEntrolled,imageUpload, editProfile, addReview, getReviews, reportTeacher, reportCourse, deleteReview, editReview, getVideoUrl, reportUser} from '../controller/userController.js'
 import {cancelPayment, CheckOut, verifyPayment,isEntrolled} from '../controller/orderController.js'
 import verifyUser from '../middlewares/userAuth.js'
 import { AskQuestion } from '../controller/courseController.js'
@@ -51,5 +51,21 @@ router.post('/addToCart',verifyUser,addToCart)
 router.get('/getCart',verifyUser,getCart)
 
 router.delete('/removeCart/:courseId',verifyUser,removeCart)
+
+router.put('/addReview',verifyUser,addReview)
+
+router.get('/getReviews/:courseId',verifyUser,getReviews)
+
+router.put('/reportTeacher',verifyUser,reportTeacher)
+
+router.put('/reportCourse',verifyUser,reportCourse)
+
+router.put('/reportUser',verifyUser,reportUser)
+
+router.put('/deleteReview',verifyUser,deleteReview)
+
+router.put('/editReview',verifyUser,editReview)
+
+router.get('/getVideoUrl',verifyUser,getVideoUrl)
 
 export default router

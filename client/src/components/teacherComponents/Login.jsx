@@ -39,34 +39,52 @@ function Login() {
   },[])
 
   function handleSubmit(){
-    setIsLoading(true)
-    teacherLogin(userDetails).then((result)=>{
-      const userDetails=result.data
-      console.log(result.data.token)
-      localStorage.setItem('teacherJwtToken',result.data.token)
-      dispatch(setTeacherDetails(userDetails))
-      navigate('/teachers')
-    }).catch((err)=>{
-      toast.error(err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
+    if(userDetails.email.trim().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+      if(userDetails.password.trim()!==""){
+        setIsLoading(true)
+        teacherLogin(userDetails).then((result)=>{
+          const userDetails=result.data
+          localStorage.setItem('teacherJwtToken',result.data.token)
+          dispatch(setTeacherDetails(userDetails))
+          navigate('/teachers')
+        }).catch((err)=>{
+          toast.error(err.response.data)
+        }).finally(()=>{
+          setIsLoading(false)
+        })
+      }else{
+        toast.error('Fill the password')
+      }
+    }else{
+      toast.error('Fill A Valid Email')
+    }
   }
 
   function handleForgot(){
-    setIsLoading(true)
-    forgotPassword(userDetails).then((res)=>{
-      console.log(res)
-      if(res.status){
-        navigate('/teachers/forgot')
+    if(userDetails.email.trim().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+      if(userDetails.password.trim()!==""){
+        if(userDetails.confirmPassword.trim()===userDetails.password.trim()){
+          setIsLoading(true)
+          forgotPassword(userDetails).then((res)=>{
+            if(res.status){
+              navigate('/teachers/forgot')
+            }else{
+              toast.error(res.message)
+            }
+          }).catch((err)=>{
+            toast.error(err.response.data)
+          }).finally(()=>{
+            setIsLoading(false)
+          })
+        }else{
+          toast.error('Confirm password not match')
+        }
       }else{
-        toast.error(res.message)
+        toast.error('Fill the password')
       }
-    }).catch((err)=>{
-      toast.error(err)
-    }).finally(()=>{
-      setIsLoading(false)
-    })
+    }else{
+      toast.error('Fill A Valid Email')
+    }
   }
 
   const login = useGoogleLogin({
@@ -81,7 +99,6 @@ function Login() {
           navigate('/teachers/')
         }
       }).catch((err)=>{
-        console.log(err)
         toast.error(err.response.data)
       })
 }});

@@ -26,12 +26,10 @@ function Dashboard() {
   const [dashboardDetails,setDetails]=useState('')
     const location=useLocation()
     useEffect(()=>{
-      console.log(location.state)
       if(location.state?.message){
         toast.error(location.state?.message)
       }
       getTeacherDashboard().then((res)=>{
-        console.log(res)
         setDetails(res.data)
       }).catch((err)=>{
         console.log(err)

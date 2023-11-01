@@ -55,7 +55,6 @@ function CheckOut(props){
           setLoading(false)
   
         }).catch((error)=> {
-          console.log(error)
           toast.error(error , { position: "top-center"})
         })
         
@@ -77,7 +76,6 @@ function CheckOut(props){
         if(courseId){
           getCourse(courseId).then((res) => {
             // Seting CourseDetails 
-            console.log(res.data)
             setCourseDetails(res.data.courseDetails)
         }).catch((error) => {
           toast.error( "Something Went wrong " , { position :"top-center"})
@@ -86,7 +84,6 @@ function CheckOut(props){
         })
         }else{
           getCart().then((res)=>{
-            console.log(res.data.courses)
             setData(res.data.courses)
           }).catch((err)=>{
             console.log(err)
