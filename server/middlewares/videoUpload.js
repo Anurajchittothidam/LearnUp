@@ -17,7 +17,7 @@ const s3 = new AWS.S3({
     region:region
 });
 
-const upload = multer({ dest: 'uploads/' })
+const upload = multer({ dest: 'public/uploads/' })
 
 
 
@@ -41,5 +41,6 @@ export const S3Upload=async(file)=>{
         })
 
 }
+
 
 export default upload

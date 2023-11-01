@@ -13,7 +13,7 @@ import dotenv from 'dotenv'
 import Course from '../models/courseSchema.js'
 import Order from '../models/orderSchema.js'
 import mongoose from 'mongoose';
-import { S3Upload } from '../middlewares/videoUpload.js';
+// import { S3Upload } from '../middlewares/videoUpload.js';
 dotenv.config()
 
 
