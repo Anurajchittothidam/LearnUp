@@ -38,7 +38,7 @@ function Category() {
       })
       .catch((err) => {
         setCourses([]);
-        toast.error(err.message);
+        // toast.error(err.message);
       })
       .finally(() => {
         setIsLoading(false);
@@ -71,7 +71,7 @@ function Category() {
       <div className="min-h-screen">
         <Navbar />
         <div className="min-h-screen bg-gradient-to-tr from-red-300 to-yellow-200 flex justify-center  py-20">
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full">
             <div className="flex flex-row justify-between">
               <div className="basis-1/4">
                 <h3 className="ps-5 text-3xl">All Courses</h3>
@@ -113,7 +113,7 @@ function Category() {
               </div>
             </div>
             <div className="flex">
-              <div className="bg-white mt-10 flex-initial w-64 rounded-xl">
+              <div className="bg-white basis-1/6 mt-10 flex-initial w-64 rounded-xl">
                 <h3 className="p-5 text-2xl font-medium">Categories</h3>
                 {categories.map((category, index) => (
                   <div className="flex items-center ps-5 p-3" key={index}>
@@ -234,17 +234,17 @@ function Category() {
                     <i className="fas fa-circle-notch fa-spin fa-5x"></i>
                   </span>
                 </div>
-              ) : (
-                <div className="h-64 flex-initial mt-20 md:px-4 md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 space-y-4 md:space-y-0">
+              ) : (<>
                   {courses.length === 0 ? (
                     <>
-                      <div className=" bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg">
-                        <h3 className="text-4xl text-black">No course found</h3>
+                    <div className="flex flex-col ms-40 bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg m-5">
+                        <h3 className="text-center text-4xl text-black">No course found</h3>
                         <img src="/images/noCourse.avif" alt="" />
                       </div>
                     </>
                   ) : (
-                    courses.map((result) => (
+                  <div className="h-64 flex-initial mt-20 md:px-4 md:grid md:grid-cols-2 lg:grid-cols-3 gap-5 space-y-4 md:space-y-0">
+                   { courses.map((result) => (
                       <div className="max-w-sm bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg transform hover:scale-105 transition duration-500">
                         {/* <h3 className="mb-3 text-xl font-bold text-indigo-600"></h3> */}
                         <div className="relative">
@@ -338,9 +338,10 @@ function Category() {
                           </button>
                         </div>
                       </div>
-                    ))
-                  )}
+                    ))}
                 </div>
+                  )}
+                </>
               )}
             </div>
             {total > 1 && (
