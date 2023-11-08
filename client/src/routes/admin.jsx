@@ -9,7 +9,7 @@ import Categories from '../pages/adminSide/categories.jsx'
 import Signup from '../components/SignUp/Signup.jsx'
 import Otp from '../components/OTP/Otp'
 import PrivateRoute from '../util/PrivetRoutes.jsx'
-import Reports from '../components/adminComponents/Reports/Reports.jsx'
+import Reports from '../components/admin/Reports/Reports.jsx'
 
 function AdminComponents() {
   return (

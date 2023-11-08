@@ -1,5 +1,5 @@
 import React from 'react'
-import EditCourse from '../../components/teacherComponents/EditCourse'
+import EditCourse from '../../components/teacher/EditCourse'
 
 function EditCoursePage() {
   return (

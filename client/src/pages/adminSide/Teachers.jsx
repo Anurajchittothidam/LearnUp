@@ -1,5 +1,5 @@
 import React from 'react'
-import UserTeacher from '../../components/adminComponents/list/UserTeacher.jsx'
+import UserTeacher from '../../components/admin/list/UserTeacher.jsx'
 
 function Teachers() {
   return (

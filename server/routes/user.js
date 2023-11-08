@@ -24,8 +24,6 @@ router.get('/courses',getAllCourse)
 
 router.post('/course-details',getCourse)
 
-// router.put('/entroll',entroll)
-
 router.get('/categories',getCategory)
 
 router.post('/checkOut',verifyUser,CheckOut)

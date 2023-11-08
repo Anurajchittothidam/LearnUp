@@ -16,7 +16,7 @@ const server=app.listen(port,()=>{
     console.log('port connected to 8000')
 })
 app.use(cors({
-    origin : ['http://localhost:5173'],
+    origin : [process.env.CLIENTSIDE_URL],
     methods : ["GET","POST" , "DELETE" ,"PUT" , "PATCH"] ,
     credentials: true 
 }))

@@ -1,5 +1,5 @@
 import React from 'react'
-import AddCourse from '../../components/teacherComponents/AddCourse'
+import AddCourse from '../../components/teacher/AddCourse'
 
 
 function AddCoursePage() {
