@@ -8,11 +8,6 @@ import { getAllCategories } from '../controller/adminController.js'
 import { getCategory } from '../controller/teacherController.js'
 import { upload } from '../middlewares/imageUpload.js'
 
-router.get('/',(req,res)=>{
-    console.log('dfjk')
-    res.send('success')
-})
-
 router.post('/signup',userSignup)
 
 router.get('/auth',userAuth)
