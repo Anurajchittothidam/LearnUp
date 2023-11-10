@@ -25,6 +25,7 @@ function Profile() {
     const user=useSelector((state)=>state.user)
     const id=user?.id
     useEffect(()=>{
+      setIsLoading(true)
         getUser().then((res)=>{
             setUserData({
                 name:res?.data?.name,
@@ -37,9 +38,9 @@ function Profile() {
             })
            }).catch((err)=>{
             console.log(err)
+           }).finally(()=>{
+            setIsLoading(false)
            })
-               
-        
     },[id])
 
 

@@ -24,7 +24,7 @@ function Category() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    // setIsLoading(true)
+    setIsLoading(true)
     allCourses(filterCategory.toString(), price, search, sort, page, limit)
       .then((res) => {
         if (res.data.block === "true") {
@@ -70,9 +70,8 @@ function Category() {
     <>
       <div className="min-h-screen">
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-tr from-red-300 to-yellow-200 flex justify-center  py-20">
-          <div className="flex flex-col w-full">
-            <div className="flex flex-row justify-between">
+        <div className="min-h-screen bg-gradient-to-tr from-red-300 to-yellow-200  py-20">
+        <div className="flex flex-row justify-between">
               <div className="basis-1/4">
                 <h3 className="ps-5 text-3xl">All Courses</h3>
               </div>
@@ -112,8 +111,10 @@ function Category() {
                 </div>
               </div>
             </div>
+          {/* <div className="flex flex-col w-full"> */}
+            
             <div className="flex">
-              <div className="bg-white basis-1/6 mt-10 flex-initial w-64 rounded-xl">
+              <div className="min-h-screen bg-white basis-1/6 mt-10 flex-initial w-64 rounded-xl">
                 <h3 className="p-5 text-2xl font-medium">Categories</h3>
                 {categories.map((category, index) => (
                   <div className="flex items-center ps-5 p-3" key={index}>
@@ -229,15 +230,17 @@ function Category() {
                 </select>
               </div>
               {isLoading ? (
-                <div className="w-full h-full fixed block top-0 left-0 bg-white opacity-75 z-50">
-                  <span class="text-green-500 opacity-75 top-1/2 my-0 mx-auto block relative w-0 h-0">
+                <div className="basis-5/6 min-h-screen block bg-white mt-10 opacity-25 z-50">
+                  <span class="text-green-500 opacity-75 top-1/2  block  w-0 h-0">
                     <i className="fas fa-circle-notch fa-spin fa-5x"></i>
                   </span>
                 </div>
               ) : (<>
+              <div className="basis-5/6 min-h-screen">
+              
                   {courses.length === 0 ? (
                     <>
-                    <div className="flex flex-col ms-40 bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg m-5">
+                    <div className="flex flex-col bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg m-5">
                         <h3 className="text-center text-4xl text-black">No course found</h3>
                         <img src="/images/noCourse.avif" alt="" />
                       </div>
@@ -247,7 +250,7 @@ function Category() {
                    { courses.map((result) => (
                       <div className="max-w-sm bg-white px-6 pt-6 pb-2 rounded-xl shadow-lg transform hover:scale-105 transition duration-500">
                         {/* <h3 className="mb-3 text-xl font-bold text-indigo-600"></h3> */}
-                        <div className="relative">
+                         <div className="relative">
                           <img
                             onClick={() =>
                               navigate(`/course-details/${result._id}`)
@@ -341,9 +344,11 @@ function Category() {
                     ))}
                 </div>
                   )}
-                </>
+              
+            </div> 
+            </>
               )}
-            </div>
+              </div>
             {total > 1 && (
               <nav
                 aria-label="Page navigation example"
@@ -419,7 +424,7 @@ function Category() {
                 </ul>
               </nav>
             )}
-          </div>
+          {/* </div> */}
         </div>
 
         <ToastContainer />
