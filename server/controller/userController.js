@@ -257,7 +257,7 @@ const getAllCourse = async (req, res) => {
     const query = {
       block: false,
       category: { $in: categoryIds },
-      name: { $regex: `^${search}`, $options: "i" },
+      name: { $regex: `${search}`, $options: "i" },
     };
 
     let sortby = {};
