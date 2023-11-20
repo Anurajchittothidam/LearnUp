@@ -24,7 +24,7 @@ app.use(cors({
 }))
 app.use(express.static(path.resolve()+'/public'))
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended:true}))
+app.use(bodyParser.urlencoded({extended:true,limit:'100mb'}))
 
 
 const errorHandler = (err, req, res, next) => {
