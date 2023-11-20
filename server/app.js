@@ -3,6 +3,7 @@ const app=express()
 import cors from 'cors'
 import mongoose from 'mongoose'
 import path from 'path'
+import bodyParser from 'body-parser'
 import userRouter from './routes/user.js'
 import adminRouter from './routes/admin.js'
 import teacherRouter from './routes/teacher.js'
@@ -22,8 +23,8 @@ app.use(cors({
     credentials: true 
 }))
 app.use(express.static(path.resolve()+'/public'))
-app.use(express.json())
-app.use(express.urlencoded({extended:true}))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended:true}))
 
 
 const errorHandler = (err, req, res, next) => {

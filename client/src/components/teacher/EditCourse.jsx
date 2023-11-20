@@ -146,6 +146,7 @@ function EditCourse() {
   const handleVideo=(e,action)=>{
     const formData=new FormData()
     formData.append('video',e.target.files[0])
+    console.log('formData',formData)
     axiosInstance('teacherJwtToken').put('/teacher/uploadVideo',formData,{
       onUploadProgress:(p)=>{
           const percentComplete=Math.round(p.loaded*100/p.total)
@@ -160,7 +161,7 @@ function EditCourse() {
       lessonFormik.setFieldValue('videoUrl',res.data.url)
       }
     }).catch((err)=>{
-      console.log(err)
+      console.log('upload error',err)
     })
   }
 
